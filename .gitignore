@@ -1,0 +1,26 @@
+# Data
+/data/external/*
+/data/processed/*
+!/data/external/.gitkeep
+!/data/processed/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Results artifacts
+*.log
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
