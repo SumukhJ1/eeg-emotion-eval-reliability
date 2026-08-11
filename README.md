@@ -17,6 +17,12 @@ Do EEG emotion-recognition model conclusions change when evaluation moves from s
 - Local dataset downloaded
 - Used first because it is accessible now and subject-organized
 
+## Current Dataset Inspection
+
+The local GAMEEMO inspection script confirms 28 subject folders, 112 raw EEG CSV files, 112 raw EEG MAT files, 112 preprocessed EEG CSV files, and 112 preprocessed EEG MAT files. A sample preprocessed CSV has 38,252 samples x 14 channels at 128 Hz, or about 298.84 seconds; planned 2-second windows will have shape 256 samples x 14 channels.
+
+See `docs/gameemo_metadata.md` for the concise file structure and metadata summary.
+
 ### DREAMER: follow-up benchmark
 
 - 23 subjects
