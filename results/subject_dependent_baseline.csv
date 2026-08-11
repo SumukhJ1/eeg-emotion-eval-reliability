@@ -1,0 +1,2 @@
+experiment,random_seed,test_size,window_samples,n_records,n_windows,n_features,train_windows,test_windows,stratified,accuracy,macro_f1
+subject_dependent_logistic_regression_stat_features,0,0.2,256,112,16688,70,13352,3336,True,0.376199,0.374935
