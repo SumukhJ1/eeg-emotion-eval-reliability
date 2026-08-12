@@ -32,14 +32,20 @@ The first working pipeline is complete for GAMEEMO preprocessed CSV files:
 - Recordings are converted into 2-second non-overlapping windows at 128 Hz.
 - Each window is represented with simple statistical features: mean, standard deviation, min, max, and mean squared value per channel.
 - Subject-dependent logistic regression baseline is saved in `results/subject_dependent_baseline.csv`.
+- Subject-dependent linear SVM baseline is saved in `results/subject_dependent_svm_baseline.csv`.
 - LOSO logistic regression baseline is saved in `results/loso_baseline.csv` and summarized in `results/loso_summary.csv`.
+- LOSO linear SVM baseline is saved in `results/loso_svm_baseline.csv` and summarized in `results/loso_svm_summary.csv`.
 
-Current first-pass results:
+Current first-pass results with simple statistical window features:
 
-| Protocol | Windows | Accuracy | Macro-F1 |
-| --- | ---: | ---: | ---: |
-| Subject-dependent random split | 16,688 | 0.376199 | 0.374935 |
-| LOSO mean across 28 folds | 16,688 | 0.321309 | 0.299302 |
+| Protocol | Model | Windows | Accuracy | Macro-F1 |
+| --- | --- | ---: | ---: | ---: |
+| Subject-dependent random split | Logistic regression | 16,688 | 0.376199 | 0.374935 |
+| Subject-dependent random split | Linear SVM | 16,688 | 0.374700 | 0.372721 |
+| LOSO mean across 28 folds | Logistic regression | 16,688 | 0.321309 | 0.299302 |
+| LOSO mean across 28 folds | Linear SVM | 16,688 | 0.320709 | 0.298395 |
+
+Both baseline model families are using the same rough feature representation. Stronger EEG-specific features, especially bandpower-style features, are the next step before drawing conclusions about model quality.
 
 ### DREAMER: follow-up benchmark
 
