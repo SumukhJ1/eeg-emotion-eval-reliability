@@ -23,6 +23,24 @@ The local GAMEEMO inspection script confirms 28 subject folders, 112 raw EEG CSV
 
 See `docs/gameemo_metadata.md` for the concise file structure and metadata summary.
 
+## Current Baseline Status
+
+The first working pipeline is complete for GAMEEMO preprocessed CSV files:
+
+- Dataset inspected and preprocessed CSV selected for the first pass.
+- GAMEEMO loader parses subject IDs, game IDs, and labels.
+- Recordings are converted into 2-second non-overlapping windows at 128 Hz.
+- Each window is represented with simple statistical features: mean, standard deviation, min, max, and mean squared value per channel.
+- Subject-dependent logistic regression baseline is saved in `results/subject_dependent_baseline.csv`.
+- LOSO logistic regression baseline is saved in `results/loso_baseline.csv` and summarized in `results/loso_summary.csv`.
+
+Current first-pass results:
+
+| Protocol | Windows | Accuracy | Macro-F1 |
+| --- | ---: | ---: | ---: |
+| Subject-dependent random split | 16,688 | 0.376199 | 0.374935 |
+| LOSO mean across 28 folds | 16,688 | 0.321309 | 0.299302 |
+
 ### DREAMER: follow-up benchmark
 
 - 23 subjects
@@ -58,17 +76,18 @@ protocol drop = subject-dependent score - LOSO score
 - Per-subject variance / standard deviation
 - Protocol drop
 
-## Immediate TODO
+## Known Limitations
 
-- [ ] Inspect GAMEEMO subject folders and file formats
-- [ ] Choose first file type: preprocessed CSV or MAT
-- [ ] Load one EEG recording and print shape
-- [ ] Implement 2-second windowing
-- [ ] Map labels: boring, calm, horror, funny
-- [ ] Implement subject-dependent split
-- [ ] Implement LOSO split
-- [ ] Run first logistic regression / SVM baseline
-- [ ] Save first result table in `results/`
+- These are first-pass baseline results, not final model conclusions.
+- Statistical features are a simple baseline and are not final EEG bandpower features.
+- GAMEEMO preprocessing details still need verification against the dataset documentation.
+- EEGNet and Transformer / ViT-style models are next model tiers after the baseline pipeline is stable.
+
+## Next Steps
+
+1. Stabilize the baseline pipeline and result reporting.
+2. Add an EEGNet or lightweight CNN baseline.
+3. Evaluate whether a Transformer / ViT-style EEG model is feasible for this dataset size and protocol.
 
 ## Notes
 
