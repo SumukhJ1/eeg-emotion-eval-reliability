@@ -1,0 +1,2 @@
+experiment,random_seed,window_samples,n_records,n_windows,n_features,n_folds,mean_accuracy,std_accuracy,mean_macro_f1,std_macro_f1
+loso_logistic_regression_stat_features,0,256,112,16688,70,28,0.321309,0.075509,0.299302,0.077698
