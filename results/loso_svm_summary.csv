@@ -1,0 +1,2 @@
+experiment,model_name,random_seed,window_samples,n_records,n_windows,n_features,n_folds,mean_accuracy,std_accuracy,mean_macro_f1,std_macro_f1
+loso_linear_svm_stat_features,StandardScaler+LinearSVC,0,256,112,16688,70,28,0.320709,0.077824,0.298395,0.076706
