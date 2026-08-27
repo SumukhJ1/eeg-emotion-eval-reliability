@@ -9,10 +9,27 @@ if TYPE_CHECKING:
 
 
 STAT_FEATURES = ("mean", "std", "min", "max", "energy")
+EEG_BANDS = {
+    "delta": (0.5, 4.0),
+    "theta": (4.0, 8.0),
+    "alpha": (8.0, 13.0),
+    "beta": (13.0, 30.0),
+    "gamma": (30.0, 45.0),
+}
 
 
 def make_stat_feature_names(channels: Sequence[str]) -> list[str]:
     return [f"{channel}_{feature}" for channel in channels for feature in STAT_FEATURES]
+
+
+def _channel_names(channels: Sequence[str] | None, n_channels: int) -> list[str]:
+    if channels is None:
+        return [f"channel_{idx}" for idx in range(n_channels)]
+
+    channel_names = list(channels)
+    if len(channel_names) != n_channels:
+        raise ValueError(f"Expected {n_channels} channel names, got {len(channel_names)}")
+    return channel_names
 
 
 def extract_statistical_features(
@@ -45,12 +62,7 @@ def extract_statistical_features(
         raise ValueError(f"Expected windows shaped n_windows x channels x samples, got {windows.shape}")
 
     n_windows, n_channels, _ = windows.shape
-    if channels is None:
-        channel_names = [f"channel_{idx}" for idx in range(n_channels)]
-    else:
-        channel_names = list(channels)
-        if len(channel_names) != n_channels:
-            raise ValueError(f"Expected {n_channels} channel names, got {len(channel_names)}")
+    channel_names = _channel_names(channels, n_channels)
 
     stats = [
         windows.mean(axis=2),
@@ -61,3 +73,53 @@ def extract_statistical_features(
     ]
     features = np.stack(stats, axis=2).reshape(n_windows, n_channels * len(STAT_FEATURES))
     return features, make_stat_feature_names(channel_names)
+
+
+def make_bandpower_feature_names(
+    channels: Sequence[str],
+    bands: dict[str, tuple[float, float]] = EEG_BANDS,
+) -> list[str]:
+    return [f"{channel}_{band}_power" for channel in channels for band in bands]
+
+
+def extract_bandpower_features(
+    windows: "np.ndarray",
+    channels: Sequence[str] | None = None,
+    sampling_rate: int = 128,
+    bands: dict[str, tuple[float, float]] = EEG_BANDS,
+) -> tuple["np.ndarray", list[str]]:
+    """Extract simple FFT bandpower features from EEG windows.
+
+    This is an EEG-specific baseline feature set, not a final tuned signal
+    processing pipeline. Inputs are windows shaped n_windows x channels x
+    window_samples. Outputs are shaped n_windows x (channels * bands).
+    """
+    try:
+        import numpy as np
+    except ImportError as exc:
+        raise ImportError("NumPy is required to extract EEG bandpower features.") from exc
+
+    if windows.ndim != 3:
+        raise ValueError(f"Expected windows shaped n_windows x channels x samples, got {windows.shape}")
+    if sampling_rate <= 0:
+        raise ValueError(f"sampling_rate must be positive, got {sampling_rate}")
+    if not bands:
+        raise ValueError("bands must contain at least one frequency range")
+
+    n_windows, n_channels, n_samples = windows.shape
+    channel_names = _channel_names(channels, n_channels)
+    freqs = np.fft.rfftfreq(n_samples, d=1.0 / sampling_rate)
+    spectrum = np.fft.rfft(windows, axis=2)
+    power = (np.abs(spectrum) ** 2) / n_samples
+
+    band_blocks = []
+    for band_name, (low_hz, high_hz) in bands.items():
+        if low_hz < 0 or high_hz <= low_hz:
+            raise ValueError(f"Invalid band {band_name}: {(low_hz, high_hz)}")
+        mask = (freqs >= low_hz) & (freqs < high_hz)
+        if not mask.any():
+            raise ValueError(f"Band {band_name} has no FFT bins for {n_samples} samples at {sampling_rate} Hz")
+        band_blocks.append(power[:, :, mask].mean(axis=2))
+
+    features = np.stack(band_blocks, axis=2).reshape(n_windows, n_channels * len(bands))
+    return features, make_bandpower_feature_names(channel_names, bands=bands)
