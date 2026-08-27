@@ -11,43 +11,16 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.baseline_data import build_stat_feature_dataset
 from src.config import RESULTS_DIR
-from src.features import extract_statistical_features
-from src.gameemo_loader import GAMEEMO_ROOT, discover_records, load_record
+from src.gameemo_loader import GAMEEMO_ROOT
 from src.splits import make_subject_dependent_split
-from src.windowing import DEFAULT_WINDOW_SAMPLES, window_gameemo_record
+from src.windowing import DEFAULT_WINDOW_SAMPLES
 
 
 RANDOM_SEED = 0
 TEST_SIZE = 0.2
 RESULTS_PATH = RESULTS_DIR / "subject_dependent_baseline.csv"
-
-
-def build_feature_dataset(root: Path, limit_records: int | None = None):
-    import numpy as np
-
-    records = discover_records(root, limit=limit_records)
-    if not records:
-        raise ValueError(f"No GAMEEMO preprocessed CSV records found under {root}")
-
-    feature_blocks = []
-    metadata = []
-    feature_names: list[str] | None = None
-
-    for record in records:
-        loaded_record, data = load_record(record)
-        windows, window_metadata = window_gameemo_record(loaded_record, data, window_samples=DEFAULT_WINDOW_SAMPLES)
-        features, names = extract_statistical_features(windows, channels=loaded_record.channels)
-
-        if feature_names is None:
-            feature_names = names
-        elif feature_names != names:
-            raise ValueError(f"Feature names changed for {loaded_record.source_file}")
-
-        feature_blocks.append(features)
-        metadata.extend(window_metadata)
-
-    return np.vstack(feature_blocks), metadata, feature_names or [], len(records)
 
 
 def write_result_csv(
@@ -116,7 +89,11 @@ def main() -> None:
     from sklearn.pipeline import make_pipeline
     from sklearn.preprocessing import StandardScaler
 
-    features, metadata, feature_names, n_records = build_feature_dataset(args.root, limit_records=args.limit_records)
+    dataset = build_stat_feature_dataset(args.root, limit_records=args.limit_records)
+    features = dataset.features
+    metadata = dataset.metadata
+    feature_names = dataset.feature_names
+    n_records = dataset.n_records
     labels = np.asarray([item.label for item in metadata])
 
     split = make_subject_dependent_split(metadata, test_size=TEST_SIZE, random_state=RANDOM_SEED, stratify=True)
