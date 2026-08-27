@@ -1,0 +1,3 @@
+protocol,model_name,feature_set,random_seed,test_size,window_samples,n_records,n_windows,n_features,train_windows,test_windows,stratified,accuracy,macro_f1
+subject_dependent,LogisticRegression,fft_bandpower,0,0.2,256,112,16688,70,13352,3336,True,0.491607,0.490146
+subject_dependent,LinearSVM,fft_bandpower,0,0.2,256,112,16688,70,13352,3336,True,0.490408,0.488620
