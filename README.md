@@ -40,10 +40,13 @@ Current first-pass results with simple statistical window features:
 
 | Protocol | Model | Windows | Accuracy | Macro-F1 |
 | --- | --- | ---: | ---: | ---: |
+| Random chance baseline | Uniform 4-class guess | 16,688 | 0.250000 | 0.250000 |
 | Subject-dependent random split | Logistic regression | 16,688 | 0.376199 | 0.374935 |
 | Subject-dependent random split | Linear SVM | 16,688 | 0.374700 | 0.372721 |
 | LOSO mean across 28 folds | Logistic regression | 16,688 | 0.321309 | 0.299302 |
 | LOSO mean across 28 folds | Linear SVM | 16,688 | 0.320709 | 0.298395 |
+
+GAMEEMO is a 4-class task, so a uniform random baseline is 25%. Current results should be interpreted relative to this chance level and against internal protocol-controlled comparisons, not directly against published GAMEEMO numbers until preprocessing and split details are verified.
 
 Both baseline model families are using the same rough feature representation. Stronger EEG-specific features, especially bandpower-style features, are the next step before drawing conclusions about model quality.
 
