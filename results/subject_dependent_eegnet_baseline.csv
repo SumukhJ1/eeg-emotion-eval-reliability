@@ -1,0 +1,2 @@
+experiment,model_name,random_seed,test_size,window_samples,n_records,n_windows,n_channels,n_classes,train_windows,test_windows,epochs,batch_size,learning_rate,device,accuracy,macro_f1,final_train_loss
+subject_dependent_eegnet_raw_windows,EEGNet,0,0.2,256,112,16688,14,4,13352,3336,5,64,0.001,cpu,0.433753,0.414538,1.252673
