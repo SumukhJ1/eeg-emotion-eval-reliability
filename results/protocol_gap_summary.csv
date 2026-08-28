@@ -1,0 +1,5 @@
+feature_set,model_name,subject_dependent_accuracy,loso_mean_accuracy,accuracy_protocol_drop,subject_dependent_macro_f1,loso_mean_macro_f1,macro_f1_protocol_drop,loso_accuracy_std,loso_macro_f1_std
+statistical,LogisticRegression,0.376199,0.321309,0.054890,0.374935,0.299302,0.075633,0.075509,0.077698
+statistical,LinearSVM,0.374700,0.320709,0.053991,0.372721,0.298395,0.074326,0.077824,0.076706
+bandpower,LogisticRegression,0.491607,0.391898,0.099709,0.490146,0.367046,0.123101,0.087654,0.093395
+bandpower,LinearSVM,0.490408,0.388603,0.101805,0.488620,0.361954,0.126666,0.089865,0.096874
