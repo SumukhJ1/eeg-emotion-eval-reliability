@@ -1,2 +1,2 @@
-experiment,model_name,random_seed,test_size,window_samples,n_records,n_windows,n_channels,n_classes,train_windows,test_windows,epochs,batch_size,learning_rate,device,accuracy,macro_f1,final_train_loss
-subject_dependent_eegnet_raw_windows,EEGNet,0,0.2,256,112,16688,14,4,13352,3336,5,64,0.001,cpu,0.433753,0.414538,1.252673
+experiment,model_name,random_seed,test_size,val_size,window_samples,n_records,n_windows,n_channels,n_classes,train_windows,val_windows,test_windows,requested_epochs,epochs_ran,best_epoch,batch_size,learning_rate,weight_decay,device,best_val_accuracy,best_val_macro_f1,test_accuracy,test_macro_f1,final_train_loss,best_train_loss,early_stopped
+subject_dependent_eegnet_raw_windows,EEGNet,0,0.2,0.2,256,112,16688,14,4,10681,2671,3336,30,30,25,64,0.001,0.0001,cpu,0.554848,0.546717,0.552458,0.543291,1.063468,1.077511,False
