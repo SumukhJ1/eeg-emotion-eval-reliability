@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from src.config import SAMPLING_RATE
+from src.config import LABEL_MAP, SAMPLING_RATE
 from src.features import EEG_BANDS, extract_bandpower_features, extract_statistical_features
 from src.gameemo_loader import GAMEEMO_ROOT, discover_records, load_record
 from src.windowing import DEFAULT_WINDOW_SAMPLES, EegWindowMetadata, window_gameemo_record
@@ -21,6 +21,48 @@ class BaselineFeatureDataset:
     metadata: list[EegWindowMetadata]
     feature_names: list[str]
     n_records: int
+
+
+@dataclass(frozen=True)
+class BaselineWindowDataset:
+    windows: "np.ndarray"
+    labels: "np.ndarray"
+    metadata: list[EegWindowMetadata]
+    n_records: int
+
+
+def build_window_dataset(
+    root: Path = GAMEEMO_ROOT,
+    limit_records: int | None = None,
+    window_samples: int = DEFAULT_WINDOW_SAMPLES,
+) -> BaselineWindowDataset:
+    """Load GAMEEMO CSVs into raw windows shaped windows x channels x samples."""
+    import numpy as np
+
+    records = discover_records(root, limit=limit_records)
+    if not records:
+        raise ValueError(f"No GAMEEMO preprocessed CSV records found under {root}")
+
+    window_blocks = []
+    metadata: list[EegWindowMetadata] = []
+
+    for record in records:
+        loaded_record, data = load_record(record)
+        windows, window_metadata = window_gameemo_record(
+            loaded_record,
+            data,
+            window_samples=window_samples,
+        )
+        window_blocks.append(windows)
+        metadata.extend(window_metadata)
+
+    labels = np.asarray([LABEL_MAP[item.label] for item in metadata], dtype=np.int64)
+    return BaselineWindowDataset(
+        windows=np.vstack(window_blocks),
+        labels=labels,
+        metadata=metadata,
+        n_records=len(records),
+    )
 
 
 def build_stat_feature_dataset(
