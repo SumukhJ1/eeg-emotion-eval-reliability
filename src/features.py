@@ -16,6 +16,7 @@ EEG_BANDS = {
     "beta": (13.0, 30.0),
     "gamma": (30.0, 45.0),
 }
+BANDPOWER_MODES = ("absolute", "log", "relative", "log_relative")
 
 
 def make_stat_feature_names(channels: Sequence[str]) -> list[str]:
@@ -78,8 +79,11 @@ def extract_statistical_features(
 def make_bandpower_feature_names(
     channels: Sequence[str],
     bands: dict[str, tuple[float, float]] = EEG_BANDS,
+    mode: str = "absolute",
 ) -> list[str]:
-    return [f"{channel}_{band}_power" for channel in channels for band in bands]
+    if mode not in BANDPOWER_MODES:
+        raise ValueError(f"mode must be one of {BANDPOWER_MODES}, got {mode}")
+    return [f"{channel}_{band}_{mode}_power" for channel in channels for band in bands]
 
 
 def extract_bandpower_features(
@@ -87,12 +91,21 @@ def extract_bandpower_features(
     channels: Sequence[str] | None = None,
     sampling_rate: int = 128,
     bands: dict[str, tuple[float, float]] = EEG_BANDS,
+    mode: str = "absolute",
+    epsilon: float = 1e-12,
 ) -> tuple["np.ndarray", list[str]]:
     """Extract simple FFT bandpower features from EEG windows.
 
     This is an EEG-specific baseline feature set, not a final tuned signal
     processing pipeline. Inputs are windows shaped n_windows x channels x
     window_samples. Outputs are shaped n_windows x (channels * bands).
+
+    Supported modes:
+
+    - absolute: mean FFT power in each band.
+    - log: log absolute bandpower.
+    - relative: bandpower divided by total modeled bandpower per channel/window.
+    - log_relative: log relative bandpower.
     """
     try:
         import numpy as np
@@ -105,6 +118,10 @@ def extract_bandpower_features(
         raise ValueError(f"sampling_rate must be positive, got {sampling_rate}")
     if not bands:
         raise ValueError("bands must contain at least one frequency range")
+    if mode not in BANDPOWER_MODES:
+        raise ValueError(f"mode must be one of {BANDPOWER_MODES}, got {mode}")
+    if epsilon <= 0:
+        raise ValueError(f"epsilon must be positive, got {epsilon}")
 
     n_windows, n_channels, n_samples = windows.shape
     channel_names = _channel_names(channels, n_channels)
@@ -121,5 +138,34 @@ def extract_bandpower_features(
             raise ValueError(f"Band {band_name} has no FFT bins for {n_samples} samples at {sampling_rate} Hz")
         band_blocks.append(power[:, :, mask].mean(axis=2))
 
-    features = np.stack(band_blocks, axis=2).reshape(n_windows, n_channels * len(bands))
-    return features, make_bandpower_feature_names(channel_names, bands=bands)
+    bandpower = np.stack(band_blocks, axis=2)
+    if mode == "absolute":
+        transformed = bandpower
+    elif mode == "log":
+        transformed = np.log(bandpower + epsilon)
+    elif mode == "relative":
+        total_power = bandpower.sum(axis=2, keepdims=True)
+        transformed = bandpower / (total_power + epsilon)
+    else:
+        total_power = bandpower.sum(axis=2, keepdims=True)
+        relative_power = bandpower / (total_power + epsilon)
+        transformed = np.log(relative_power + epsilon)
+
+    features = transformed.reshape(n_windows, n_channels * len(bands))
+    return features, make_bandpower_feature_names(channel_names, bands=bands, mode=mode)
+
+
+def extract_log_relative_bandpower_features(
+    windows: "np.ndarray",
+    channels: Sequence[str] | None = None,
+    sampling_rate: int = 128,
+    bands: dict[str, tuple[float, float]] = EEG_BANDS,
+) -> tuple["np.ndarray", list[str]]:
+    """Extract log-relative FFT bandpower features from EEG windows."""
+    return extract_bandpower_features(
+        windows,
+        channels=channels,
+        sampling_rate=sampling_rate,
+        bands=bands,
+        mode="log_relative",
+    )

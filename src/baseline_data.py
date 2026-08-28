@@ -69,6 +69,7 @@ def build_bandpower_feature_dataset(
     limit_records: int | None = None,
     window_samples: int = DEFAULT_WINDOW_SAMPLES,
     sampling_rate: int = SAMPLING_RATE,
+    mode: str = "absolute",
 ) -> BaselineFeatureDataset:
     """Load GAMEEMO CSVs and build FFT bandpower window features for baselines."""
     import numpy as np
@@ -93,6 +94,7 @@ def build_bandpower_feature_dataset(
             channels=loaded_record.channels,
             sampling_rate=sampling_rate,
             bands=EEG_BANDS,
+            mode=mode,
         )
 
         if feature_names is None:
@@ -108,4 +110,20 @@ def build_bandpower_feature_dataset(
         metadata=metadata,
         feature_names=feature_names or [],
         n_records=len(records),
+    )
+
+
+def build_log_relative_bandpower_feature_dataset(
+    root: Path = GAMEEMO_ROOT,
+    limit_records: int | None = None,
+    window_samples: int = DEFAULT_WINDOW_SAMPLES,
+    sampling_rate: int = SAMPLING_RATE,
+) -> BaselineFeatureDataset:
+    """Load GAMEEMO CSVs and build log-relative FFT bandpower window features."""
+    return build_bandpower_feature_dataset(
+        root=root,
+        limit_records=limit_records,
+        window_samples=window_samples,
+        sampling_rate=sampling_rate,
+        mode="log_relative",
     )

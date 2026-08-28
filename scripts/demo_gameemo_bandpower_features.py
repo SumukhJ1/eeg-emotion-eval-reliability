@@ -11,7 +11,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import SAMPLING_RATE
-from src.features import EEG_BANDS, extract_bandpower_features
+from src.features import BANDPOWER_MODES, EEG_BANDS, extract_bandpower_features
 from src.gameemo_loader import GAMEEMO_ROOT, discover_records, load_record
 from src.windowing import DEFAULT_WINDOW_SAMPLES, window_gameemo_record
 
@@ -24,6 +24,12 @@ def main() -> None:
         type=int,
         default=DEFAULT_WINDOW_SAMPLES,
         help="Fixed window length in samples. Defaults to 2 seconds at 128 Hz.",
+    )
+    parser.add_argument(
+        "--mode",
+        choices=BANDPOWER_MODES,
+        default="log_relative",
+        help="Bandpower transform to apply.",
     )
     args = parser.parse_args()
 
@@ -38,11 +44,13 @@ def main() -> None:
         channels=record.channels,
         sampling_rate=SAMPLING_RATE,
         bands=EEG_BANDS,
+        mode=args.mode,
     )
 
     print(f"source_file: {record.source_file}")
     print(f"record: subject={record.subject} game={record.game} label={record.label}")
     print(f"bands: {EEG_BANDS}")
+    print(f"mode: {args.mode}")
     print(f"window_shape: {windows.shape}")
     print(f"bandpower_feature_matrix_shape: {features.shape}")
     print(f"n_feature_names: {len(feature_names)}")
