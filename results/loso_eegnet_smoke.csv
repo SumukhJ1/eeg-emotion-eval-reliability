@@ -1,0 +1,5 @@
+experiment,model_name,subject,random_seed,val_size,window_samples,n_records,n_windows,n_channels,n_classes,train_windows,val_windows,test_windows,requested_epochs,epochs_ran,best_epoch,batch_size,learning_rate,weight_decay,device,best_val_accuracy,best_val_macro_f1,test_accuracy,test_macro_f1,final_train_loss,best_train_loss,early_stopped
+loso_eegnet_raw_windows,EEGNet,S01,0,0.2,256,112,16688,14,4,12873,3219,596,3,3,3,64,0.001,0.0001,cpu,0.360982,0.354082,0.406040,0.397375,1.366542,1.366542,False
+loso_eegnet_raw_windows,EEGNet,S02,0,0.2,256,112,16688,14,4,12873,3219,596,3,3,3,64,0.001,0.0001,cpu,0.395154,0.396551,0.328859,0.240336,1.351207,1.351207,False
+loso_eegnet_raw_windows,EEGNet,S03,0,0.2,256,112,16688,14,4,12873,3219,596,3,3,3,64,0.001,0.0001,cpu,0.376204,0.375128,0.672819,0.666488,1.339742,1.339742,False
+loso_eegnet_raw_windows,EEGNet,S04,0,0.2,256,112,16688,14,4,12873,3219,596,3,3,3,64,0.001,0.0001,cpu,0.359118,0.357572,0.521812,0.453540,1.354765,1.354765,False
