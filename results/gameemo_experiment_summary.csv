@@ -1,0 +1,10 @@
+feature_input,model_name,protocol,accuracy,macro_f1,chance_accuracy,accuracy_above_chance,macro_f1_above_chance,protocol_drop_accuracy,protocol_drop_macro_f1,source_file
+time_statistical,LogisticRegression,subject_dependent,0.376199,0.374935,0.250000,0.126199,0.124935,0.054890,0.075633,results/subject_dependent_baseline.csv
+time_statistical,LinearSVM,subject_dependent,0.374700,0.372721,0.250000,0.124700,0.122721,0.053991,0.074326,results/subject_dependent_svm_baseline.csv
+time_statistical,LogisticRegression,loso,0.321309,0.299302,0.250000,0.071309,0.049302,,,results/loso_summary.csv
+time_statistical,LinearSVM,loso,0.320709,0.298395,0.250000,0.070709,0.048395,,,results/loso_svm_summary.csv
+log_relative_bandpower,LogisticRegression,subject_dependent,0.468225,0.467152,0.250000,0.218225,0.217152,0.080401,0.096971,results/subject_dependent_log_relative_bandpower_baselines.csv
+log_relative_bandpower,LinearSVM,subject_dependent,0.469724,0.466975,0.250000,0.219724,0.216975,0.081661,0.099958,results/subject_dependent_log_relative_bandpower_baselines.csv
+log_relative_bandpower,LogisticRegression,loso,0.387824,0.370181,0.250000,0.137824,0.120181,,,results/loso_log_relative_bandpower_summary.csv
+log_relative_bandpower,LinearSVM,loso,0.388063,0.367017,0.250000,0.138063,0.117017,,,results/loso_log_relative_bandpower_summary.csv
+raw_eeg_windows,EEGNet,subject_dependent,0.552458,0.543291,0.250000,0.302458,0.293291,,,results/subject_dependent_eegnet_baseline.csv
