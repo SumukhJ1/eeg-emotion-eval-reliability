@@ -23,6 +23,8 @@ The local GAMEEMO inspection script confirms 28 subject folders, 112 raw EEG CSV
 
 See `docs/gameemo_metadata.md` for the concise file structure and metadata summary.
 
+See `docs/gameemo_prior_methods.md` for a conservative GAMEEMO prior-method comparison table. Published accuracies are treated as literature context, not direct comparisons, unless split, labels, preprocessing, and feature extraction match this repo's protocol.
+
 ## Current Baseline Status
 
 The first working pipeline is complete for GAMEEMO preprocessed CSV files:

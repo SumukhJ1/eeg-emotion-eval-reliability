@@ -4,6 +4,8 @@ These are rough first-pass results for GAMEEMO using the local preprocessed CSV 
 
 GAMEEMO has four target classes, so the uniform random chance baseline is 25% accuracy. These first-pass results should be interpreted relative to chance and relative to the project's own controlled subject-dependent versus LOSO protocols, not directly against published papers yet.
 
+For literature context, see `docs/gameemo_prior_methods.md`. Prior GAMEEMO papers report a wide range of accuracies, but many use binary labels, different feature pipelines, or split protocols that are not confirmed to match these experiments.
+
 ## Results
 
 | Protocol | Model | Windows | Train/Test Windows | Accuracy | Macro-F1 |
