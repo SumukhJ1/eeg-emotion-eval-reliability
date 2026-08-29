@@ -1,0 +1,5 @@
+learning_rate,dropout,test_accuracy,test_macro_f1,best_val_accuracy,best_val_macro_f1,best_epoch,epochs_ran,requested_epochs,batch_size,weight_decay,patience,temporal_filters,depth_multiplier,separable_filters,temporal_kernel,separable_kernel,device,source_file
+0.001,0.25,0.596523,0.594435,0.593036,0.593524,27,30,30,64,0.0001,8,8,2,16,64,16,cpu,results\eegnet_lr_dropout_grid_runs\lr_0p001_dropout_0p25.csv
+0.001,0.5,0.552458,0.543291,0.554848,0.546717,25,30,30,64,0.0001,8,8,2,16,64,16,cpu,results\eegnet_lr_dropout_grid_runs\lr_0p001_dropout_0p5.csv
+0.0005,0.25,0.594724,0.587984,0.577312,0.571503,30,30,30,64,0.0001,8,8,2,16,64,16,cpu,results\eegnet_lr_dropout_grid_runs\lr_0p0005_dropout_0p25.csv
+0.0005,0.5,0.527878,0.514261,0.532385,0.521568,28,30,30,64,0.0001,8,8,2,16,64,16,cpu,results\eegnet_lr_dropout_grid_runs\lr_0p0005_dropout_0p5.csv
