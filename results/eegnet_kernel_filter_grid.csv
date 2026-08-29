@@ -1,0 +1,5 @@
+temporal_kernel,temporal_filters,test_accuracy,test_macro_f1,best_val_accuracy,best_val_macro_f1,best_epoch,epochs_ran,requested_epochs,learning_rate,dropout,batch_size,weight_decay,patience,depth_multiplier,separable_filters,separable_kernel,device,source_file
+32,4,0.574640,0.572062,0.552602,0.551265,30,30,30,0.001,0.25,64,0.0001,8,2,16,16,cpu,results\eegnet_kernel_filter_grid_runs\kernel_32_filters_4.csv
+32,8,0.658873,0.651943,0.646200,0.640662,29,30,30,0.001,0.25,64,0.0001,8,2,16,16,cpu,results\eegnet_kernel_filter_grid_runs\kernel_32_filters_8.csv
+64,4,0.541667,0.534981,0.548484,0.545322,28,30,30,0.001,0.25,64,0.0001,8,2,16,16,cpu,results\eegnet_kernel_filter_grid_runs\kernel_64_filters_4.csv
+64,8,0.596523,0.594435,0.593036,0.593524,27,30,30,0.001,0.25,64,0.0001,8,2,16,16,cpu,results\eegnet_kernel_filter_grid_runs\kernel_64_filters_8.csv
