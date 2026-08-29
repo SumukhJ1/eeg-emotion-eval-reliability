@@ -7,4 +7,5 @@ log_relative_bandpower,LogisticRegression,subject_dependent,0.468225,0.467152,0.
 log_relative_bandpower,LinearSVM,subject_dependent,0.469724,0.466975,0.250000,0.219724,0.216975,0.081661,0.099958,results/subject_dependent_log_relative_bandpower_baselines.csv
 log_relative_bandpower,LogisticRegression,loso,0.387824,0.370181,0.250000,0.137824,0.120181,,,results/loso_log_relative_bandpower_summary.csv
 log_relative_bandpower,LinearSVM,loso,0.388063,0.367017,0.250000,0.138063,0.117017,,,results/loso_log_relative_bandpower_summary.csv
-raw_eeg_windows,EEGNet,subject_dependent,0.552458,0.543291,0.250000,0.302458,0.293291,,,results/subject_dependent_eegnet_baseline.csv
+raw_eeg_windows,EEGNet,subject_dependent,0.552458,0.543291,0.250000,0.302458,0.293291,0.234625,0.278458,results/subject_dependent_eegnet_baseline.csv
+raw_eeg_windows,EEGNet,loso,0.317833,0.264833,0.250000,0.067833,0.014833,,,results/loso_eegnet_summary.csv

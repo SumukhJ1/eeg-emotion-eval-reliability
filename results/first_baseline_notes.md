@@ -35,3 +35,12 @@ Output tables:
 - The split is subject-dependent, so windows from the same subjects can appear in both train and test.
 - LOSO results are more relevant for unseen-subject generalization, but preprocessing details still need verification.
 - Stronger EEG-specific features are the next step before drawing conclusions about model quality.
+
+## EEGNet Protocol Gap
+
+| Model | Input | Protocol | Accuracy | Macro-F1 | Chance | Accuracy drop vs subject-dependent | Macro-F1 drop vs subject-dependent |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
+| EEGNet | Raw EEG windows | Subject-dependent | 0.552458 | 0.543291 | 0.250000 | 0.234625 | 0.278458 |
+| EEGNet | Raw EEG windows | LOSO | 0.317833 | 0.264833 | 0.250000 | N/A | N/A |
+
+EEGNet improves subject-dependent performance, but LOSO determines whether the gain transfers to unseen subjects. The current full LOSO run used only 3 CPU epochs per fold, so it should be treated as a first complete cross-subject baseline rather than a tuned EEGNet result.

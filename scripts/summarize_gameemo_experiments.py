@@ -174,6 +174,18 @@ def build_summary_rows(results_dir: Path = RESULTS_DIR) -> list[ExperimentRow]:
         )
     )
 
+    eegnet_loso = read_single_row(results_dir / "loso_eegnet_summary.csv")
+    rows.append(
+        ExperimentRow(
+            feature_input="raw_eeg_windows",
+            model_name="EEGNet",
+            protocol="loso",
+            accuracy=float(eegnet_loso["mean_accuracy"]),
+            macro_f1=float(eegnet_loso["mean_macro_f1"]),
+            source_file="results/loso_eegnet_summary.csv",
+        )
+    )
+
     return add_protocol_drops(rows)
 
 

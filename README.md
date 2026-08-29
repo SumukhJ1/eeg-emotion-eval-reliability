@@ -52,6 +52,15 @@ GAMEEMO is a 4-class task, so a uniform random baseline is 25%. Current results 
 
 Both baseline model families are using the same rough feature representation. Stronger EEG-specific features, especially bandpower-style features, are the next step before drawing conclusions about model quality.
 
+### EEGNet protocol gap
+
+| Model | Input | Protocol | Accuracy | Macro-F1 | Chance | Accuracy drop vs subject-dependent | Macro-F1 drop vs subject-dependent |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
+| EEGNet | Raw EEG windows | Subject-dependent | 0.552458 | 0.543291 | 0.250000 | 0.234625 | 0.278458 |
+| EEGNet | Raw EEG windows | LOSO | 0.317833 | 0.264833 | 0.250000 | N/A | N/A |
+
+EEGNet improves subject-dependent performance over the current classical baselines. The LOSO result determines whether that gain transfers to unseen subjects; the current short-trained CPU LOSO run shows a large protocol gap, so cross-subject generalization remains the main bottleneck.
+
 ### DREAMER: follow-up benchmark
 
 - 23 subjects
