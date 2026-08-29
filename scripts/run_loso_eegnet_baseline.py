@@ -43,6 +43,12 @@ class FoldResult:
     final_train_loss: float
     best_train_loss: float
     early_stopped: bool
+    dropout: float
+    temporal_filters: int
+    depth_multiplier: int
+    separable_filters: int
+    temporal_kernel: int
+    separable_kernel: int
 
 
 class TorchDevice:
@@ -181,6 +187,12 @@ def run_fold(
     weight_decay: float,
     patience: int,
     val_size: float,
+    dropout: float,
+    temporal_filters: int,
+    depth_multiplier: int,
+    separable_filters: int,
+    temporal_kernel: int,
+    separable_kernel: int,
 ) -> FoldResult:
     train_indices, val_indices = split_train_validation(
         split.train_indices,
@@ -205,6 +217,12 @@ def run_fold(
             n_channels=x_train.shape[1],
             n_samples=x_train.shape[2],
             n_classes=len(LABEL_MAP),
+            temporal_filters=temporal_filters,
+            depth_multiplier=depth_multiplier,
+            separable_filters=separable_filters,
+            temporal_kernel=temporal_kernel,
+            separable_kernel=separable_kernel,
+            dropout=dropout,
         )
     ).to(device.value)
     train_loader = make_loader(torch, DataLoader, TensorDataset, x_train, y_train, batch_size, shuffle=True)
@@ -265,6 +283,12 @@ def run_fold(
         final_train_loss=final_loss,
         best_train_loss=best_train_loss,
         early_stopped=early_stopped,
+        dropout=dropout,
+        temporal_filters=temporal_filters,
+        depth_multiplier=depth_multiplier,
+        separable_filters=separable_filters,
+        temporal_kernel=temporal_kernel,
+        separable_kernel=separable_kernel,
     )
 
 
@@ -289,6 +313,12 @@ def result_fieldnames() -> list[str]:
         "batch_size",
         "learning_rate",
         "weight_decay",
+        "dropout",
+        "temporal_filters",
+        "depth_multiplier",
+        "separable_filters",
+        "temporal_kernel",
+        "separable_kernel",
         "device",
         "best_val_accuracy",
         "best_val_macro_f1",
@@ -333,6 +363,12 @@ def format_result_row(
         "batch_size": batch_size,
         "learning_rate": learning_rate,
         "weight_decay": weight_decay,
+        "dropout": result.dropout,
+        "temporal_filters": result.temporal_filters,
+        "depth_multiplier": result.depth_multiplier,
+        "separable_filters": result.separable_filters,
+        "temporal_kernel": result.temporal_kernel,
+        "separable_kernel": result.separable_kernel,
         "device": device,
         "best_val_accuracy": f"{result.best_val_accuracy:.6f}",
         "best_val_macro_f1": f"{result.best_val_macro_f1:.6f}",
@@ -382,6 +418,12 @@ def write_summary(output_path: Path, rows: list[dict[str, object]]) -> None:
         "batch_size": rows[0]["batch_size"],
         "learning_rate": rows[0]["learning_rate"],
         "weight_decay": rows[0]["weight_decay"],
+        "dropout": rows[0]["dropout"],
+        "temporal_filters": rows[0]["temporal_filters"],
+        "depth_multiplier": rows[0]["depth_multiplier"],
+        "separable_filters": rows[0]["separable_filters"],
+        "temporal_kernel": rows[0]["temporal_kernel"],
+        "separable_kernel": rows[0]["separable_kernel"],
         "device": rows[0]["device"],
     }
     fieldnames = list(summary)
@@ -402,6 +444,12 @@ def main() -> None:
     parser.add_argument("--learning-rate", type=float, default=0.001)
     parser.add_argument("--weight-decay", type=float, default=0.0001)
     parser.add_argument("--patience", type=int, default=8)
+    parser.add_argument("--dropout", type=float, default=0.5)
+    parser.add_argument("--temporal-filters", type=int, default=8)
+    parser.add_argument("--depth-multiplier", type=int, default=2)
+    parser.add_argument("--separable-filters", type=int, default=16)
+    parser.add_argument("--temporal-kernel", type=int, default=64)
+    parser.add_argument("--separable-kernel", type=int, default=16)
     parser.add_argument("--val-size", type=float, default=VAL_SIZE)
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     parser.add_argument("--max-folds", type=int, default=None, help="Optional debugging limit on LOSO folds.")
@@ -425,6 +473,18 @@ def main() -> None:
         raise SystemExit(f"batch-size must be positive, got {args.batch_size}")
     if not 0 < args.val_size < 1:
         raise SystemExit(f"val-size must be between 0 and 1, got {args.val_size}")
+    if not 0 <= args.dropout < 1:
+        raise SystemExit(f"dropout must be in [0, 1), got {args.dropout}")
+    if args.temporal_filters <= 0:
+        raise SystemExit(f"temporal-filters must be positive, got {args.temporal_filters}")
+    if args.depth_multiplier <= 0:
+        raise SystemExit(f"depth-multiplier must be positive, got {args.depth_multiplier}")
+    if args.separable_filters <= 0:
+        raise SystemExit(f"separable-filters must be positive, got {args.separable_filters}")
+    if args.temporal_kernel <= 0:
+        raise SystemExit(f"temporal-kernel must be positive, got {args.temporal_kernel}")
+    if args.separable_kernel <= 0:
+        raise SystemExit(f"separable-kernel must be positive, got {args.separable_kernel}")
 
     torch, DataLoader, TensorDataset = require_torch()
     import numpy as np
@@ -466,6 +526,12 @@ def main() -> None:
             weight_decay=args.weight_decay,
             patience=args.patience,
             val_size=args.val_size,
+            dropout=args.dropout,
+            temporal_filters=args.temporal_filters,
+            depth_multiplier=args.depth_multiplier,
+            separable_filters=args.separable_filters,
+            temporal_kernel=args.temporal_kernel,
+            separable_kernel=args.separable_kernel,
         )
         rows.append(
             format_result_row(
