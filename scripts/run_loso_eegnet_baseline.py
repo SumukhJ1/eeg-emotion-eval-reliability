@@ -24,6 +24,7 @@ from src.windowing import DEFAULT_WINDOW_SAMPLES, EegWindowMetadata
 RANDOM_SEED = 0
 VAL_SIZE = 0.2
 RESULTS_PATH = RESULTS_DIR / "loso_eegnet_baseline.csv"
+SUMMARY_PATH = RESULTS_DIR / "loso_eegnet_summary.csv"
 
 
 @dataclass(frozen=True)
@@ -351,10 +352,51 @@ def write_rows(output_path: Path, rows: list[dict[str, object]]) -> None:
         writer.writerows(rows)
 
 
+def write_summary(output_path: Path, rows: list[dict[str, object]]) -> None:
+    import statistics
+
+    accuracies = [float(row["test_accuracy"]) for row in rows]
+    macro_f1s = [float(row["test_macro_f1"]) for row in rows]
+    best_accuracy = max(rows, key=lambda row: float(row["test_accuracy"]))
+    worst_accuracy = min(rows, key=lambda row: float(row["test_accuracy"]))
+    best_macro_f1 = max(rows, key=lambda row: float(row["test_macro_f1"]))
+    worst_macro_f1 = min(rows, key=lambda row: float(row["test_macro_f1"]))
+
+    summary = {
+        "experiment": "loso_eegnet_raw_windows",
+        "model_name": "EEGNet",
+        "n_folds": len(rows),
+        "mean_accuracy": f"{statistics.mean(accuracies):.6f}",
+        "std_accuracy": f"{statistics.pstdev(accuracies):.6f}",
+        "mean_macro_f1": f"{statistics.mean(macro_f1s):.6f}",
+        "std_macro_f1": f"{statistics.pstdev(macro_f1s):.6f}",
+        "best_accuracy_subject": best_accuracy["subject"],
+        "best_accuracy": best_accuracy["test_accuracy"],
+        "worst_accuracy_subject": worst_accuracy["subject"],
+        "worst_accuracy": worst_accuracy["test_accuracy"],
+        "best_macro_f1_subject": best_macro_f1["subject"],
+        "best_macro_f1": best_macro_f1["test_macro_f1"],
+        "worst_macro_f1_subject": worst_macro_f1["subject"],
+        "worst_macro_f1": worst_macro_f1["test_macro_f1"],
+        "requested_epochs": rows[0]["requested_epochs"],
+        "batch_size": rows[0]["batch_size"],
+        "learning_rate": rows[0]["learning_rate"],
+        "weight_decay": rows[0]["weight_decay"],
+        "device": rows[0]["device"],
+    }
+    fieldnames = list(summary)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", newline="") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow(summary)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run GAMEEMO leave-one-subject-out EEGNet baselines.")
     parser.add_argument("--root", type=Path, default=GAMEEMO_ROOT, help="Path to the GAMEEMO dataset root.")
     parser.add_argument("--output", type=Path, default=RESULTS_PATH, help="Path to write per-subject fold results.")
+    parser.add_argument("--summary-output", type=Path, default=SUMMARY_PATH, help="Path to write aggregate LOSO metrics.")
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--learning-rate", type=float, default=0.001)
@@ -440,13 +482,16 @@ def main() -> None:
             )
         )
         write_rows(args.output, rows)
+        write_summary(args.summary_output, rows)
         print(
             f"subject={result.subject} test_accuracy={result.test_accuracy:.6f} "
             f"test_macro_f1={result.test_macro_f1:.6f} best_epoch={result.best_epoch}"
         )
         print(f"wrote_partial: {args.output}")
+        print(f"wrote_summary: {args.summary_output}")
 
     print(f"wrote: {args.output}")
+    print(f"wrote: {args.summary_output}")
 
 
 if __name__ == "__main__":
