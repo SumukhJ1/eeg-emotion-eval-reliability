@@ -1,0 +1,2 @@
+n_windows,kept_windows,removed_windows,missing_value_windows,nonfinite_value_windows,near_zero_variance_windows,flat_channel_windows,flat_channel_instances,variance_epsilon,filter_policy,extreme_amplitude_policy,extreme_variance_policy
+16688,16688,0,0,0,0,0,0,1e-12,remove_missing_nonfinite_near_zero_variance_flat_channel_windows,flag_only,flag_only
