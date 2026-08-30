@@ -42,12 +42,14 @@ Output tables:
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | EEGNet | Raw EEG windows | Subject-dependent | 0.552458 | 0.543291 | 0.250000 | 0.234625 | 0.278458 |
 | EEGNet | Raw EEG windows | LOSO | 0.317833 | 0.264833 | 0.250000 | N/A | N/A |
+| Tuned EEGNet | Raw EEG windows | Subject-dependent | 0.658873 | 0.651943 | 0.250000 | 0.136102 | 0.151088 |
+| Tuned EEGNet | Raw EEG windows | LOSO | 0.522771 | 0.500855 | 0.250000 | N/A | N/A |
 
-EEGNet improves subject-dependent performance, but LOSO determines whether the gain transfers to unseen subjects. The current full LOSO run used only 3 CPU epochs per fold, so it should be treated as a first complete cross-subject baseline rather than a tuned EEGNet result.
+EEGNet improves subject-dependent performance, but LOSO determines whether the gain transfers to unseen subjects. The tuned EEGNet LOSO run improves over the initial short 3-epoch LOSO baseline, while still showing a measurable subject-dependent to LOSO protocol gap.
 
 ## Controlled EEGNet Tuning Results
 
-All rows use raw 2-second GAMEEMO windows, the same subject-dependent split, and chance baseline of 0.250000. The LOSO columns are only filled where that exact protocol has been run; tuned subject-dependent gains should not be presented as cross-subject gains until rerun under LOSO.
+All rows use raw 2-second GAMEEMO windows and chance baseline of 0.250000. Subject-dependent rows use the same random train/validation/test split. LOSO columns are only filled where that configuration has been run under leave-one-subject-out.
 
 | **Run** | **LR** | **Dropout** | **Kernel** | **Filters** | **SD acc** | **SD F1** | **LOSO acc** | **LOSO F1** |
 | ------- | ------ | ----------- | ---------- | ----------- | ---------- | --------- | ------------ | ----------- |
@@ -57,8 +59,8 @@ All rows use raw 2-second GAMEEMO windows, the same subject-dependent split, and
 | LR/dropout grid | 0.0005 | 0.25 | 64 | 8 | 0.594724 | 0.587984 | not rerun | not rerun |
 | LR/dropout grid | 0.0005 | 0.50 | 64 | 8 | 0.527878 | 0.514261 | not rerun | not rerun |
 | Kernel/filter grid | 0.001 | 0.25 | 32 | 4 | 0.574640 | 0.572062 | not rerun | not rerun |
-| Kernel/filter grid | 0.001 | 0.25 | 32 | 8 | 0.658873 | 0.651943 | not rerun | not rerun |
+| Kernel/filter grid | 0.001 | 0.25 | 32 | 8 | 0.658873 | 0.651943 | 0.522771 | 0.500855 |
 | Kernel/filter grid | 0.001 | 0.25 | 64 | 4 | 0.541667 | 0.534981 | not rerun | not rerun |
 | Kernel/filter grid | 0.001 | 0.25 | 64 | 8 | 0.596523 | 0.594435 | not rerun | not rerun |
 
-The controlled tuning improved subject-dependent EEGNet performance from 0.552458 accuracy / 0.543291 macro-F1 to 0.658873 accuracy / 0.651943 macro-F1. LOSO has not improved yet because the tuned configurations have not been run under LOSO; the only complete LOSO EEGNet result remains the short 3-epoch CPU baseline at 0.317833 accuracy / 0.264833 macro-F1.
+The controlled tuning improved subject-dependent EEGNet performance from 0.552458 accuracy / 0.543291 macro-F1 to 0.658873 accuracy / 0.651943 macro-F1. Running the same tuned configuration under LOSO improved mean LOSO accuracy from 0.317833 to 0.522771 and mean LOSO macro-F1 from 0.264833 to 0.500855. The tuned protocol gap remains 0.136102 accuracy and 0.151088 macro-F1, so the model is better but still protocol-sensitive.

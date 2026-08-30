@@ -388,6 +388,17 @@ def write_rows(output_path: Path, rows: list[dict[str, object]]) -> None:
         writer.writerows(rows)
 
 
+def read_existing_rows(output_path: Path) -> list[dict[str, object]]:
+    if not output_path.exists():
+        return []
+    with output_path.open(newline="") as csv_file:
+        reader = csv.DictReader(csv_file)
+        rows = list(reader)
+    if reader.fieldnames != result_fieldnames():
+        raise ValueError(f"Existing output has unexpected columns: {output_path}")
+    return rows
+
+
 def write_summary(output_path: Path, rows: list[dict[str, object]]) -> None:
     import statistics
 
@@ -454,6 +465,11 @@ def main() -> None:
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     parser.add_argument("--max-folds", type=int, default=None, help="Optional debugging limit on LOSO folds.")
     parser.add_argument(
+        "--resume-existing",
+        action="store_true",
+        help="Load existing output rows and skip completed held-out subjects.",
+    )
+    parser.add_argument(
         "--window-samples",
         type=int,
         default=DEFAULT_WINDOW_SAMPLES,
@@ -504,11 +520,19 @@ def main() -> None:
         raise SystemExit("No LOSO folds available.")
 
     device = TorchDevice(torch, args.device)
-    rows: list[dict[str, object]] = []
+    rows: list[dict[str, object]] = read_existing_rows(args.output) if args.resume_existing else []
+    completed_subjects = {str(row["subject"]) for row in rows}
+    splits = [split for split in splits if split.test_subject not in completed_subjects]
     print(f"records: {dataset.n_records}")
     print(f"windows: {dataset.windows.shape}")
     print(f"folds: {len(splits)}")
     print(f"device: {device.value}")
+    if completed_subjects:
+        print(f"resumed_completed_subjects: {','.join(sorted(completed_subjects))}")
+    if args.resume_existing and not splits:
+        write_summary(args.summary_output, rows)
+        print(f"wrote: {args.summary_output}")
+        return
 
     for split in splits:
         result = run_fold(
