@@ -1,0 +1,2 @@
+n_subjects,n_records,n_windows,missing_value_windows,nonfinite_value_windows,near_zero_variance_windows,flat_channel_windows,flat_channel_instances,extreme_amplitude_windows,extreme_variance_windows,amplitude_threshold,variance_threshold
+28,112,16688,0,0,0,0,0,17,879,370.145550,1255.610078
