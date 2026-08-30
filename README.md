@@ -25,6 +25,8 @@ See `docs/gameemo_metadata.md` for the concise file structure and metadata summa
 
 See `docs/gameemo_prior_methods.md` for a conservative GAMEEMO prior-method comparison table. Published accuracies are treated as literature context, not direct comparisons, unless split, labels, preprocessing, and feature extraction match this repo's protocol.
 
+See `docs/gameemo_filtering_rules.md` for the pre-registered conservative filtering policy. The first filtered rerun should remove only missing, nonfinite, flat-channel, or near-zero-variance windows; extreme amplitude and variance windows are flagged but not automatically removed.
+
 ## Current Baseline Status
 
 The first working pipeline is complete for GAMEEMO preprocessed CSV files:
