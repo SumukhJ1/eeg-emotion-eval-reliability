@@ -1,0 +1,13 @@
+source_file: C:\Users\Sumukh\Downloads\GAMEEMO Dataset\Database for Emotion Recognition System Based on EEG Signals and Various Computer Games - GAMEEMO\GAMEEMO\(S01)\Preprocessed EEG Data\.csv format\S01G1AllChannels.csv
+record: subject=S01 game=G1 label=boring
+window_shape: (149, 14, 256)
+batch_shape: (8, 14, 256)
+token_count: 15
+channel_tokens: 14
+cls_tokens: 1
+d_model: 64
+n_heads: 4
+n_layers: 2
+logits_shape: (8, 4)
+n_classes: 4
+training_performed: False
