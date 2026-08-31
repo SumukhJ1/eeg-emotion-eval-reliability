@@ -1,0 +1,5 @@
+learning_rate,dropout,test_accuracy,test_macro_f1,best_val_accuracy,best_val_macro_f1,best_epoch,epochs_ran,requested_epochs,batch_size,weight_decay,patience,d_model,n_heads,n_layers,dim_feedforward,device,status,source_file
+0.001,0.1,0.596523,0.596109,0.606140,0.605473,29,30,30,64,0.0001,8,64,4,2,128,cpu,first_subject_dependent_checkpoint_not_final,results\transformer_lr_dropout_grid_runs\lr_0p001_dropout_0p1.csv
+0.001,0.25,0.561751,0.561235,0.572819,0.571061,30,30,30,64,0.0001,8,64,4,2,128,cpu,first_subject_dependent_checkpoint_not_final,results\transformer_lr_dropout_grid_runs\lr_0p001_dropout_0p25.csv
+0.0005,0.1,0.592326,0.591329,0.612879,0.612705,29,30,30,64,0.0001,8,64,4,2,128,cpu,first_subject_dependent_checkpoint_not_final,results\transformer_lr_dropout_grid_runs\lr_0p0005_dropout_0p1.csv
+0.0005,0.25,0.533873,0.533299,0.543242,0.542676,30,30,30,64,0.0001,8,64,4,2,128,cpu,first_subject_dependent_checkpoint_not_final,results\transformer_lr_dropout_grid_runs\lr_0p0005_dropout_0p25.csv
