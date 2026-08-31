@@ -16,6 +16,7 @@ from src.baseline_data import build_window_dataset
 from src.config import LABEL_MAP, RESULTS_DIR
 from src.eegnet import EEGNetConfig, build_eegnet
 from src.gameemo_loader import GAMEEMO_ROOT
+from src.neural_normalization import channel_standardize_splits
 from src.splits import make_subject_dependent_split
 from src.windowing import DEFAULT_WINDOW_SAMPLES
 
@@ -35,18 +36,6 @@ def require_torch():
             "PyTorch is required for the EEGNet baseline. Install torch before running this script."
         ) from exc
     return torch, DataLoader, TensorDataset
-
-
-def channel_standardize_splits(windows, train_indices, val_indices, test_indices):
-    train_block = windows[train_indices]
-    mean = train_block.mean(axis=(0, 2), keepdims=True)
-    std = train_block.std(axis=(0, 2), keepdims=True)
-    std[std == 0] = 1.0
-    return (
-        (windows[train_indices] - mean) / std,
-        (windows[val_indices] - mean) / std,
-        (windows[test_indices] - mean) / std,
-    )
 
 
 def train_one_epoch(model, loader, optimizer, criterion, device) -> float:
@@ -123,6 +112,7 @@ def write_result_csv(
     separable_filters: int,
     temporal_kernel: int,
     separable_kernel: int,
+    normalization_strategy: str,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
@@ -152,6 +142,7 @@ def write_result_csv(
         "temporal_kernel",
         "separable_kernel",
         "device",
+        "normalization_strategy",
         "best_val_accuracy",
         "best_val_macro_f1",
         "test_accuracy",
@@ -187,6 +178,7 @@ def write_result_csv(
         "temporal_kernel": temporal_kernel,
         "separable_kernel": separable_kernel,
         "device": device,
+        "normalization_strategy": normalization_strategy,
         "best_val_accuracy": f"{val_accuracy:.6f}",
         "best_val_macro_f1": f"{val_macro_f1:.6f}",
         "test_accuracy": f"{accuracy:.6f}",
@@ -275,7 +267,7 @@ def main() -> None:
     train_indices = sorted(int(idx) for idx in train_indices)
     val_indices = sorted(int(idx) for idx in val_indices)
 
-    x_train, x_val, x_test = channel_standardize_splits(
+    x_train, x_val, x_test, normalization_stats = channel_standardize_splits(
         dataset.windows,
         train_indices,
         val_indices,
@@ -392,6 +384,7 @@ def main() -> None:
         separable_filters=args.separable_filters,
         temporal_kernel=args.temporal_kernel,
         separable_kernel=args.separable_kernel,
+        normalization_strategy=normalization_stats.strategy,
     )
 
     print(f"records: {dataset.n_records}")
@@ -404,6 +397,7 @@ def main() -> None:
     print(f"best_val_macro_f1: {best_val_macro_f1:.6f}")
     print(f"test_accuracy: {accuracy:.6f}")
     print(f"test_macro_f1: {macro_f1:.6f}")
+    print(f"normalization_strategy: {normalization_stats.strategy}")
     print(f"wrote: {args.output}")
 
 

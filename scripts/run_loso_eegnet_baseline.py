@@ -17,6 +17,7 @@ from src.baseline_data import build_window_dataset
 from src.config import LABEL_MAP, RESULTS_DIR
 from src.eegnet import EEGNetConfig, build_eegnet
 from src.gameemo_loader import GAMEEMO_ROOT
+from src.neural_normalization import channel_standardize_splits
 from src.splits import MetadataSplit, make_loso_splits, validate_loso_split
 from src.windowing import DEFAULT_WINDOW_SAMPLES, EegWindowMetadata
 
@@ -115,18 +116,6 @@ def split_train_validation(train_indices: list[int], labels, val_size: float, ra
     return sorted(int(idx) for idx in fit_indices), sorted(int(idx) for idx in val_indices)
 
 
-def channel_standardize_splits(windows, train_indices, val_indices, test_indices):
-    train_block = windows[train_indices]
-    mean = train_block.mean(axis=(0, 2), keepdims=True)
-    std = train_block.std(axis=(0, 2), keepdims=True)
-    std[std == 0] = 1.0
-    return (
-        (windows[train_indices] - mean) / std,
-        (windows[val_indices] - mean) / std,
-        (windows[test_indices] - mean) / std,
-    )
-
-
 def make_loader(torch, DataLoader, TensorDataset, windows, labels, batch_size: int, shuffle: bool):
     return DataLoader(
         TensorDataset(
@@ -202,7 +191,7 @@ def run_fold(
     )
     assert_no_subject_leakage(metadata, split, train_indices, val_indices)
 
-    x_train, x_val, x_test = channel_standardize_splits(
+    x_train, x_val, x_test, _normalization_stats = channel_standardize_splits(
         windows,
         train_indices,
         val_indices,

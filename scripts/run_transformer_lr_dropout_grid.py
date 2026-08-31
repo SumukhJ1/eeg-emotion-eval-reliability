@@ -50,6 +50,7 @@ def write_grid(output_path: Path, rows: list[dict[str, str]]) -> None:
         "n_layers",
         "dim_feedforward",
         "device",
+        "normalization_strategy",
         "status",
         "source_file",
     ]
@@ -121,6 +122,7 @@ def run_combo(args, learning_rate: float, dropout: float) -> dict[str, str]:
         "n_layers": result["n_layers"],
         "dim_feedforward": result["dim_feedforward"],
         "device": result["device"],
+        "normalization_strategy": result["normalization_strategy"],
         "status": result["status"],
         "source_file": str(combo_output),
     }
