@@ -49,6 +49,8 @@ def write_grid(output_path: Path, rows: list[dict[str, str]]) -> None:
         "n_heads",
         "n_layers",
         "dim_feedforward",
+        "input_mode",
+        "patch_samples",
         "device",
         "normalization_strategy",
         "status",
@@ -94,6 +96,10 @@ def run_combo(args, learning_rate: float, dropout: float) -> dict[str, str]:
         str(args.n_layers),
         "--dim-feedforward",
         str(args.dim_feedforward),
+        "--input-mode",
+        args.input_mode,
+        "--patch-samples",
+        str(args.patch_samples),
         "--device",
         args.device,
     ]
@@ -121,6 +127,8 @@ def run_combo(args, learning_rate: float, dropout: float) -> dict[str, str]:
         "n_heads": result["n_heads"],
         "n_layers": result["n_layers"],
         "dim_feedforward": result["dim_feedforward"],
+        "input_mode": result["input_mode"],
+        "patch_samples": result["patch_samples"],
         "device": result["device"],
         "normalization_strategy": result["normalization_strategy"],
         "status": result["status"],
@@ -141,6 +149,8 @@ def main() -> None:
     parser.add_argument("--n-heads", type=int, default=4)
     parser.add_argument("--n-layers", type=int, default=2)
     parser.add_argument("--dim-feedforward", type=int, default=128)
+    parser.add_argument("--input-mode", choices=["channel", "temporal_patch"], default="channel")
+    parser.add_argument("--patch-samples", type=int, default=32)
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="cpu")
     parser.add_argument("--limit-records", type=int, default=None)
     args = parser.parse_args()

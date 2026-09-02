@@ -25,6 +25,8 @@ def main() -> None:
     parser.add_argument("--n-layers", type=int, default=2)
     parser.add_argument("--dim-feedforward", type=int, default=128)
     parser.add_argument("--dropout", type=float, default=0.1)
+    parser.add_argument("--input-mode", choices=["channel", "temporal_patch"], default="channel")
+    parser.add_argument("--patch-samples", type=int, default=32)
     parser.add_argument(
         "--window-samples",
         type=int,
@@ -63,6 +65,8 @@ def main() -> None:
         n_layers=args.n_layers,
         dim_feedforward=args.dim_feedforward,
         dropout=args.dropout,
+        input_mode=args.input_mode,
+        patch_samples=args.patch_samples,
     )
     model = build_eeg_transformer(config)
     model.eval()
@@ -74,8 +78,14 @@ def main() -> None:
     print(f"record: subject={record.subject} game={record.game} label={record.label}")
     print(f"window_shape: {windows.shape}")
     print(f"batch_shape: {tuple(batch.shape)}")
-    print(f"token_count: {config.n_channels + 1}")
-    print(f"channel_tokens: {config.n_channels}")
+    if config.input_mode == "channel":
+        token_count = config.n_channels
+    else:
+        token_count = config.n_samples // config.patch_samples
+    print(f"input_mode: {config.input_mode}")
+    print(f"patch_samples: {config.patch_samples}")
+    print(f"token_count: {token_count + 1}")
+    print(f"data_tokens: {token_count}")
     print(f"cls_tokens: 1")
     print(f"d_model: {config.d_model}")
     print(f"n_heads: {config.n_heads}")

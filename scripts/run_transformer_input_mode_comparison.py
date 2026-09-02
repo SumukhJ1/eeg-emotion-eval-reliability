@@ -1,4 +1,4 @@
-"""Compare 2-second and 4-second Transformer windows on GAMEEMO."""
+"""Compare channel-token and temporal-patch Transformer inputs on GAMEEMO."""
 
 from __future__ import annotations
 
@@ -16,9 +16,9 @@ from src.config import RESULTS_DIR, SAMPLING_RATE
 from src.gameemo_loader import GAMEEMO_ROOT
 
 
-WINDOW_SECONDS = [2, 4]
-OUTPUT_PATH = RESULTS_DIR / "transformer_window_length_comparison.csv"
-RUN_DIR = RESULTS_DIR / "transformer_window_length_runs"
+INPUT_MODES = ["channel", "temporal_patch"]
+OUTPUT_PATH = RESULTS_DIR / "transformer_input_mode_comparison.csv"
+RUN_DIR = RESULTS_DIR / "transformer_input_mode_runs"
 
 
 def read_single_row(path: Path) -> dict[str, str]:
@@ -32,6 +32,8 @@ def read_single_row(path: Path) -> dict[str, str]:
 def write_comparison(output_path: Path, rows: list[dict[str, str]]) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
+        "input_mode",
+        "patch_samples",
         "window_seconds",
         "window_samples",
         "test_accuracy",
@@ -53,8 +55,6 @@ def write_comparison(output_path: Path, rows: list[dict[str, str]]) -> None:
         "n_heads",
         "n_layers",
         "dim_feedforward",
-        "input_mode",
-        "patch_samples",
         "device",
         "normalization_strategy",
         "status",
@@ -66,10 +66,10 @@ def write_comparison(output_path: Path, rows: list[dict[str, str]]) -> None:
         writer.writerows(rows)
 
 
-def run_window_length(args, window_seconds: int) -> dict[str, str]:
+def run_input_mode(args, input_mode: str) -> dict[str, str]:
     args.run_dir.mkdir(parents=True, exist_ok=True)
-    window_samples = window_seconds * args.sampling_rate
-    combo_output = args.run_dir / f"window_{window_seconds}s.csv"
+    window_samples = args.window_seconds * args.sampling_rate
+    combo_output = args.run_dir / f"{input_mode}_{args.window_seconds}s.csv"
 
     command = [
         sys.executable,
@@ -101,7 +101,7 @@ def run_window_length(args, window_seconds: int) -> dict[str, str]:
         "--dim-feedforward",
         str(args.dim_feedforward),
         "--input-mode",
-        args.input_mode,
+        input_mode,
         "--patch-samples",
         str(args.patch_samples),
         "--device",
@@ -112,12 +112,14 @@ def run_window_length(args, window_seconds: int) -> dict[str, str]:
     if args.limit_records is not None:
         command.extend(["--limit-records", str(args.limit_records)])
 
-    print(f"running window_seconds={window_seconds} window_samples={window_samples}")
+    print(f"running input_mode={input_mode} window_seconds={args.window_seconds}")
     subprocess.run(command, cwd=PROJECT_ROOT, check=True)
 
     result = read_single_row(combo_output)
     return {
-        "window_seconds": str(window_seconds),
+        "input_mode": result["input_mode"],
+        "patch_samples": result["patch_samples"],
+        "window_seconds": str(args.window_seconds),
         "window_samples": result["window_samples"],
         "test_accuracy": result["test_accuracy"],
         "test_macro_f1": result["test_macro_f1"],
@@ -138,8 +140,6 @@ def run_window_length(args, window_seconds: int) -> dict[str, str]:
         "n_heads": result["n_heads"],
         "n_layers": result["n_layers"],
         "dim_feedforward": result["dim_feedforward"],
-        "input_mode": result["input_mode"],
-        "patch_samples": result["patch_samples"],
         "device": result["device"],
         "normalization_strategy": result["normalization_strategy"],
         "status": result["status"],
@@ -148,11 +148,13 @@ def run_window_length(args, window_seconds: int) -> dict[str, str]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Compare GAMEEMO Transformer 2s and 4s windows.")
+    parser = argparse.ArgumentParser(description="Compare GAMEEMO Transformer input tokenization modes.")
     parser.add_argument("--root", type=Path, default=GAMEEMO_ROOT, help="Path to the GAMEEMO dataset root.")
     parser.add_argument("--output", type=Path, default=OUTPUT_PATH)
     parser.add_argument("--run-dir", type=Path, default=RUN_DIR)
     parser.add_argument("--sampling-rate", type=int, default=SAMPLING_RATE)
+    parser.add_argument("--window-seconds", type=int, default=4)
+    parser.add_argument("--patch-samples", type=int, default=32)
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--learning-rate", type=float, default=0.001)
@@ -163,18 +165,20 @@ def main() -> None:
     parser.add_argument("--n-heads", type=int, default=4)
     parser.add_argument("--n-layers", type=int, default=2)
     parser.add_argument("--dim-feedforward", type=int, default=128)
-    parser.add_argument("--input-mode", choices=["channel", "temporal_patch"], default="channel")
-    parser.add_argument("--patch-samples", type=int, default=32)
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="cpu")
     parser.add_argument("--limit-records", type=int, default=None)
     args = parser.parse_args()
 
     if args.sampling_rate <= 0:
         raise SystemExit(f"sampling-rate must be positive, got {args.sampling_rate}")
+    if args.window_seconds <= 0:
+        raise SystemExit(f"window-seconds must be positive, got {args.window_seconds}")
+    if args.patch_samples <= 0:
+        raise SystemExit(f"patch-samples must be positive, got {args.patch_samples}")
 
     rows = []
-    for window_seconds in WINDOW_SECONDS:
-        rows.append(run_window_length(args, window_seconds))
+    for input_mode in INPUT_MODES:
+        rows.append(run_input_mode(args, input_mode))
         write_comparison(args.output, rows)
         print(f"wrote_partial: {args.output}")
 

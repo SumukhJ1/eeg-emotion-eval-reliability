@@ -38,6 +38,10 @@ def main() -> None:
         "2",
         "--dim-feedforward",
         "128",
+        "--input-mode",
+        "channel",
+        "--patch-samples",
+        "32",
         "--device",
         "cpu",
     ]

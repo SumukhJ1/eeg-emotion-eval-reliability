@@ -123,6 +123,8 @@ def write_result_csv(
     dim_feedforward: int,
     dropout: float,
     normalization_strategy: str,
+    input_mode: str,
+    patch_samples: int,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
@@ -150,6 +152,8 @@ def write_result_csv(
         "n_heads",
         "n_layers",
         "dim_feedforward",
+        "input_mode",
+        "patch_samples",
         "device",
         "normalization_strategy",
         "best_val_accuracy",
@@ -186,6 +190,8 @@ def write_result_csv(
         "n_heads": n_heads,
         "n_layers": n_layers,
         "dim_feedforward": dim_feedforward,
+        "input_mode": input_mode,
+        "patch_samples": patch_samples,
         "device": device,
         "normalization_strategy": normalization_strategy,
         "best_val_accuracy": f"{val_accuracy:.6f}",
@@ -217,6 +223,8 @@ def main() -> None:
     parser.add_argument("--n-heads", type=int, default=4)
     parser.add_argument("--n-layers", type=int, default=2)
     parser.add_argument("--dim-feedforward", type=int, default=128)
+    parser.add_argument("--input-mode", choices=["channel", "temporal_patch"], default="channel")
+    parser.add_argument("--patch-samples", type=int, default=32)
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     parser.add_argument(
         "--window-samples",
@@ -238,6 +246,8 @@ def main() -> None:
         raise SystemExit(f"batch-size must be positive, got {args.batch_size}")
     if args.patience <= 0:
         raise SystemExit(f"patience must be positive, got {args.patience}")
+    if args.patch_samples <= 0:
+        raise SystemExit(f"patch-samples must be positive, got {args.patch_samples}")
 
     torch, DataLoader, TensorDataset = require_torch()
     import numpy as np
@@ -287,6 +297,8 @@ def main() -> None:
             n_layers=args.n_layers,
             dim_feedforward=args.dim_feedforward,
             dropout=args.dropout,
+            input_mode=args.input_mode,
+            patch_samples=args.patch_samples,
         )
     ).to(device.value)
 
@@ -361,6 +373,8 @@ def main() -> None:
         dim_feedforward=args.dim_feedforward,
         dropout=args.dropout,
         normalization_strategy=normalization_stats.strategy,
+        input_mode=args.input_mode,
+        patch_samples=args.patch_samples,
     )
 
     print(f"records: {dataset.n_records}")
@@ -374,6 +388,8 @@ def main() -> None:
     print(f"test_accuracy: {accuracy:.6f}")
     print(f"test_macro_f1: {macro_f1:.6f}")
     print(f"normalization_strategy: {normalization_stats.strategy}")
+    print(f"input_mode: {args.input_mode}")
+    print(f"patch_samples: {args.patch_samples}")
     print("status: first_subject_dependent_checkpoint_not_final")
     print(f"wrote: {args.output}")
 
