@@ -1,4 +1,4 @@
-"""Run the best current train-normalized Transformer setting on GAMEEMO."""
+"""Run the best current Transformer setup with class-weighted loss."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_PATH = PROJECT_ROOT / "results" / "transformer_normalized_baseline.csv"
+OUTPUT_PATH = PROJECT_ROOT / "results" / "transformer_class_weighted_baseline.csv"
 
 
 def main() -> None:
@@ -39,11 +39,13 @@ def main() -> None:
         "--dim-feedforward",
         "128",
         "--input-mode",
-        "channel",
+        "temporal_patch",
         "--patch-samples",
         "32",
         "--class-weight",
-        "none",
+        "balanced",
+        "--window-samples",
+        "512",
         "--device",
         "cpu",
     ]

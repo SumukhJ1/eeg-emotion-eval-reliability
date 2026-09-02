@@ -57,6 +57,8 @@ def write_comparison(output_path: Path, rows: list[dict[str, str]]) -> None:
         "patch_samples",
         "device",
         "normalization_strategy",
+        "class_weight",
+        "class_weights",
         "status",
         "source_file",
     ]
@@ -104,6 +106,8 @@ def run_window_length(args, window_seconds: int) -> dict[str, str]:
         args.input_mode,
         "--patch-samples",
         str(args.patch_samples),
+        "--class-weight",
+        args.class_weight,
         "--device",
         args.device,
         "--window-samples",
@@ -142,6 +146,8 @@ def run_window_length(args, window_seconds: int) -> dict[str, str]:
         "patch_samples": result["patch_samples"],
         "device": result["device"],
         "normalization_strategy": result["normalization_strategy"],
+        "class_weight": result["class_weight"],
+        "class_weights": result["class_weights"],
         "status": result["status"],
         "source_file": str(combo_output),
     }
@@ -165,6 +171,7 @@ def main() -> None:
     parser.add_argument("--dim-feedforward", type=int, default=128)
     parser.add_argument("--input-mode", choices=["channel", "temporal_patch"], default="channel")
     parser.add_argument("--patch-samples", type=int, default=32)
+    parser.add_argument("--class-weight", choices=["none", "balanced"], default="none")
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="cpu")
     parser.add_argument("--limit-records", type=int, default=None)
     args = parser.parse_args()

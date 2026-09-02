@@ -57,6 +57,8 @@ def write_comparison(output_path: Path, rows: list[dict[str, str]]) -> None:
         "dim_feedforward",
         "device",
         "normalization_strategy",
+        "class_weight",
+        "class_weights",
         "status",
         "source_file",
     ]
@@ -104,6 +106,8 @@ def run_input_mode(args, input_mode: str) -> dict[str, str]:
         input_mode,
         "--patch-samples",
         str(args.patch_samples),
+        "--class-weight",
+        args.class_weight,
         "--device",
         args.device,
         "--window-samples",
@@ -142,6 +146,8 @@ def run_input_mode(args, input_mode: str) -> dict[str, str]:
         "dim_feedforward": result["dim_feedforward"],
         "device": result["device"],
         "normalization_strategy": result["normalization_strategy"],
+        "class_weight": result["class_weight"],
+        "class_weights": result["class_weights"],
         "status": result["status"],
         "source_file": str(combo_output),
     }
@@ -155,6 +161,7 @@ def main() -> None:
     parser.add_argument("--sampling-rate", type=int, default=SAMPLING_RATE)
     parser.add_argument("--window-seconds", type=int, default=4)
     parser.add_argument("--patch-samples", type=int, default=32)
+    parser.add_argument("--class-weight", choices=["none", "balanced"], default="none")
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--learning-rate", type=float, default=0.001)

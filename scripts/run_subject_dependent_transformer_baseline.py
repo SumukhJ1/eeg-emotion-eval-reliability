@@ -93,6 +93,18 @@ def evaluate(model, loader, device) -> tuple[float, float]:
     return float(accuracy), float(macro_f1)
 
 
+def balanced_class_weights(labels, n_classes: int):
+    """Compute balanced class weights from training labels only."""
+    import numpy as np
+
+    counts = np.bincount(labels, minlength=n_classes).astype(float)
+    if (counts == 0).any():
+        missing = [str(idx) for idx, count in enumerate(counts) if count == 0]
+        raise ValueError(f"Cannot compute balanced class weights; missing train classes: {', '.join(missing)}")
+    weights = counts.sum() / (n_classes * counts)
+    return weights
+
+
 def write_result_csv(
     output_path: Path,
     *,
@@ -125,6 +137,8 @@ def write_result_csv(
     normalization_strategy: str,
     input_mode: str,
     patch_samples: int,
+    class_weight: str,
+    class_weights,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
@@ -156,6 +170,8 @@ def write_result_csv(
         "patch_samples",
         "device",
         "normalization_strategy",
+        "class_weight",
+        "class_weights",
         "best_val_accuracy",
         "best_val_macro_f1",
         "test_accuracy",
@@ -194,6 +210,8 @@ def write_result_csv(
         "patch_samples": patch_samples,
         "device": device,
         "normalization_strategy": normalization_strategy,
+        "class_weight": class_weight,
+        "class_weights": ";".join(f"{float(weight):.6f}" for weight in class_weights),
         "best_val_accuracy": f"{val_accuracy:.6f}",
         "best_val_macro_f1": f"{val_macro_f1:.6f}",
         "test_accuracy": f"{accuracy:.6f}",
@@ -225,6 +243,7 @@ def main() -> None:
     parser.add_argument("--dim-feedforward", type=int, default=128)
     parser.add_argument("--input-mode", choices=["channel", "temporal_patch"], default="channel")
     parser.add_argument("--patch-samples", type=int, default=32)
+    parser.add_argument("--class-weight", choices=["none", "balanced"], default="none")
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     parser.add_argument(
         "--window-samples",
@@ -307,7 +326,15 @@ def main() -> None:
     test_loader = make_loader(torch, DataLoader, TensorDataset, x_test, y_test, args.batch_size, shuffle=False)
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
-    criterion = torch.nn.CrossEntropyLoss()
+    if args.class_weight == "balanced":
+        class_weights = balanced_class_weights(y_train, n_classes=len(LABEL_MAP))
+        criterion_weights = torch.as_tensor(class_weights, dtype=torch.float32, device=device.value)
+    else:
+        import numpy as np
+
+        class_weights = np.ones(len(LABEL_MAP), dtype=float)
+        criterion_weights = None
+    criterion = torch.nn.CrossEntropyLoss(weight=criterion_weights)
     final_loss = 0.0
     best_train_loss = 0.0
     best_epoch = 0
@@ -375,6 +402,8 @@ def main() -> None:
         normalization_strategy=normalization_stats.strategy,
         input_mode=args.input_mode,
         patch_samples=args.patch_samples,
+        class_weight=args.class_weight,
+        class_weights=class_weights,
     )
 
     print(f"records: {dataset.n_records}")
@@ -390,6 +419,8 @@ def main() -> None:
     print(f"normalization_strategy: {normalization_stats.strategy}")
     print(f"input_mode: {args.input_mode}")
     print(f"patch_samples: {args.patch_samples}")
+    print(f"class_weight: {args.class_weight}")
+    print("class_weights: " + ";".join(f"{float(weight):.6f}" for weight in class_weights))
     print("status: first_subject_dependent_checkpoint_not_final")
     print(f"wrote: {args.output}")
 
