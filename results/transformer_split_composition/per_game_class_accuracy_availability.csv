@@ -1,0 +1,4 @@
+analysis_target,available,reason,recommended_follow_up
+transformer_per_class_accuracy,false,Transformer result files contain aggregate metrics but not per-window predictions.,Add optional prediction export to Transformer runners.
+transformer_per_game_accuracy,false,"GAMEEMO game/class metadata is available, but predictions are not saved.","Save source metadata, true label, predicted label, and split for test windows."
+per_class_and_per_game_split_composition,true,Window metadata includes label and game for every window.,
