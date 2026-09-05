@@ -1,0 +1,14 @@
+input_model,window,protocol,accuracy,macro_f1,chance,notes,source_file
+Time-stat LR,2s,subject-dependent,0.376199,0.374935,0.250000,"Mean/std/min/max/energy per channel; seed 0 random split",results/subject_dependent_baseline.csv
+Time-stat LR,2s,LOSO,0.321309,0.299302,0.250000,Mean across 28 held-out-subject folds,results/loso_summary.csv
+Time-stat SVM,2s,subject-dependent,0.374700,0.372721,0.250000,"StandardScaler + LinearSVC on statistical features",results/subject_dependent_svm_baseline.csv
+Time-stat SVM,2s,LOSO,0.320709,0.298395,0.250000,Mean across 28 held-out-subject folds,results/loso_svm_summary.csv
+Log-relative bandpower LR,2s,subject-dependent,0.468225,0.467152,0.250000,"First EEG-specific spectral feature baseline",results/subject_dependent_log_relative_bandpower_baselines.csv
+Log-relative bandpower LR,2s,LOSO,0.387824,0.370181,0.250000,Mean across 28 held-out-subject folds,results/loso_log_relative_bandpower_summary.csv
+Log-relative bandpower SVM,2s,subject-dependent,0.469724,0.466975,0.250000,"Best classical subject-dependent baseline so far",results/subject_dependent_log_relative_bandpower_baselines.csv
+Log-relative bandpower SVM,2s,LOSO,0.388063,0.367017,0.250000,Mean across 28 held-out-subject folds,results/loso_log_relative_bandpower_summary.csv
+Tuned EEGNet,2s,subject-dependent,0.658873,0.651943,0.250000,"LR 0.001, dropout 0.25, temporal kernel 32, 8 filters",results/eegnet_kernel_filter_grid.csv
+Tuned EEGNet,2s,LOSO,0.522771,0.500855,0.250000,Full 28-fold LOSO; clear protocol drop remains,results/loso_eegnet_tuned_summary.csv
+Temporal-patch Transformer,4s,subject-dependent,0.766908,0.767266,0.250000,"Mean across seeds 0, 1, 2; train-only channel standardization",results/transformer_subject_dependent_repeated_seed_summary.csv
+Temporal-patch Transformer,4s,LOSO,0.801520,0.801141,0.250000,"Mean across seeds 0, 1, 2; leakage audits completed",results/transformer_loso_repeated_seed_summary.csv
+CNN-Transformer,4s,subject-dependent,0.764493,0.764492,0.250000,"Secondary first checkpoint; LOSO not run yet",results/cnn_transformer_subject_dependent.csv

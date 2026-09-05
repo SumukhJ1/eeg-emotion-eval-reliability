@@ -25,6 +25,8 @@ See `docs/gameemo_metadata.md` for the concise file structure and metadata summa
 
 See `docs/gameemo_prior_methods.md` for a conservative GAMEEMO prior-method comparison table. Published accuracies are treated as literature context, not direct comparisons, unless split, labels, preprocessing, and feature extraction match this repo's protocol.
 
+See `docs/final_gameemo_results.md` for the consolidated GAMEEMO result table across statistical, bandpower, EEGNet, Transformer, and CNN-Transformer baselines.
+
 See `docs/gameemo_filtering_rules.md` for the pre-registered conservative filtering policy. The first filtered rerun should remove only missing, nonfinite, flat-channel, or near-zero-variance windows; extreme amplitude and variance windows are flagged but not automatically removed.
 
 See `results/preprocessing_audit_results.md` for the before/after quality-filtered bandpower comparison. The conservative hard filter removed 0 windows, so the bandpower LR/SVM results did not materially change.
