@@ -31,6 +31,7 @@ SUMMARY_PATH = RESULTS_DIR / "loso_transformer_summary.csv"
 @dataclass(frozen=True)
 class FoldResult:
     subject: str
+    random_seed: int
     train_windows: int
     val_windows: int
     test_windows: int
@@ -185,12 +186,13 @@ def run_fold(
     input_mode: str,
     patch_samples: int,
     class_weight: str,
+    random_seed: int,
 ) -> tuple[FoldResult, str, list[float]]:
     train_indices, val_indices = split_train_validation(
         split.train_indices,
         labels,
         val_size=val_size,
-        random_seed=RANDOM_SEED,
+        random_seed=random_seed,
     )
     assert_no_subject_leakage(metadata, split, train_indices, val_indices)
 
@@ -270,6 +272,7 @@ def run_fold(
     test_accuracy, test_macro_f1 = evaluate(model, test_loader, device)
     result = FoldResult(
         subject=split.test_subject or "",
+        random_seed=random_seed,
         train_windows=len(train_indices),
         val_windows=len(val_indices),
         test_windows=len(split.test_indices),
@@ -356,7 +359,7 @@ def format_result_row(
         "experiment": "loso_transformer_raw_windows",
         "model_name": "ChannelTokenTransformer",
         "subject": result.subject,
-        "random_seed": RANDOM_SEED,
+        "random_seed": result.random_seed,
         "val_size": val_size,
         "window_samples": window_samples,
         "n_records": n_records,
@@ -425,6 +428,7 @@ def write_summary(output_path: Path, rows: list[dict[str, object]]) -> None:
     summary = {
         "experiment": "loso_transformer_raw_windows",
         "model_name": rows[0]["model_name"],
+        "random_seed": rows[0]["random_seed"],
         "n_folds": len(rows),
         "mean_accuracy": f"{statistics.mean(accuracies):.6f}",
         "std_accuracy": f"{statistics.pstdev(accuracies):.6f}",
@@ -466,6 +470,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=RESULTS_PATH, help="Path to write per-subject fold results.")
     parser.add_argument("--summary-output", type=Path, default=SUMMARY_PATH, help="Path to write aggregate LOSO metrics.")
     parser.add_argument("--epochs", type=int, default=30)
+    parser.add_argument("--random-seed", type=int, default=RANDOM_SEED)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--learning-rate", type=float, default=0.001)
     parser.add_argument("--weight-decay", type=float, default=0.0001)
@@ -509,8 +514,8 @@ def main() -> None:
     torch, DataLoader, TensorDataset = require_torch()
     import numpy as np
 
-    torch.manual_seed(RANDOM_SEED)
-    np.random.seed(RANDOM_SEED)
+    torch.manual_seed(args.random_seed)
+    np.random.seed(args.random_seed)
 
     dataset = build_window_dataset(
         args.root,
@@ -562,6 +567,7 @@ def main() -> None:
             input_mode=args.input_mode,
             patch_samples=args.patch_samples,
             class_weight=args.class_weight,
+            random_seed=args.random_seed,
         )
         rows.append(
             format_result_row(

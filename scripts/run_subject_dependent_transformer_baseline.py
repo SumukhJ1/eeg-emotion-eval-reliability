@@ -111,6 +111,7 @@ def write_result_csv(
     epochs: int,
     epochs_ran: int,
     best_epoch: int,
+    random_seed: int,
     batch_size: int,
     learning_rate: float,
     weight_decay: float,
@@ -184,7 +185,7 @@ def write_result_csv(
     row = {
         "experiment": "subject_dependent_transformer_raw_windows",
         "model_name": "ChannelTokenTransformer",
-        "random_seed": RANDOM_SEED,
+        "random_seed": random_seed,
         "test_size": TEST_SIZE,
         "val_size": VAL_SIZE,
         "window_samples": window_samples,
@@ -232,6 +233,7 @@ def main() -> None:
     parser.add_argument("--root", type=Path, default=GAMEEMO_ROOT, help="Path to the GAMEEMO dataset root.")
     parser.add_argument("--output", type=Path, default=RESULTS_PATH, help="Path to write the result CSV.")
     parser.add_argument("--epochs", type=int, default=30)
+    parser.add_argument("--random-seed", type=int, default=RANDOM_SEED)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--learning-rate", type=float, default=0.0005)
     parser.add_argument("--weight-decay", type=float, default=0.0001)
@@ -272,8 +274,8 @@ def main() -> None:
     import numpy as np
     from sklearn.model_selection import train_test_split
 
-    torch.manual_seed(RANDOM_SEED)
-    np.random.seed(RANDOM_SEED)
+    torch.manual_seed(args.random_seed)
+    np.random.seed(args.random_seed)
 
     dataset = build_window_dataset(
         args.root,
@@ -283,13 +285,13 @@ def main() -> None:
     split = make_subject_dependent_split(
         dataset.metadata,
         test_size=TEST_SIZE,
-        random_state=RANDOM_SEED,
+        random_state=args.random_seed,
         stratify=True,
     )
     train_indices, val_indices = train_test_split(
         split.train_indices,
         test_size=VAL_SIZE,
-        random_state=RANDOM_SEED,
+        random_state=args.random_seed,
         stratify=dataset.labels[split.train_indices],
     )
     train_indices = sorted(int(idx) for idx in train_indices)
@@ -376,6 +378,7 @@ def main() -> None:
         epochs=args.epochs,
         epochs_ran=epochs_ran,
         best_epoch=best_epoch,
+        random_seed=args.random_seed,
         batch_size=args.batch_size,
         learning_rate=args.learning_rate,
         weight_decay=args.weight_decay,
