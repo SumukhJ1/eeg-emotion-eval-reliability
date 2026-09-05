@@ -1,0 +1,4 @@
+seed,protocol,accuracy,macro_f1,accuracy_std,macro_f1_std,n_folds,window_samples,input_mode,patch_samples,learning_rate,dropout,d_model,n_heads,n_layers,dim_feedforward,class_weight,normalization_strategy,requested_epochs,batch_size,weight_decay,patience,device,source_file
+0,loso,0.798866,0.798241,0.039989,0.039940,28,512,temporal_patch,32,0.001,0.1,64,4,2,128,none,train_channel_standardization,30,64,0.0001,8,cpu,results\transformer_loso_repeated_seed_runs\loso_seed_0_summary.csv
+1,loso,0.806467,0.806028,0.049486,0.049346,28,512,temporal_patch,32,0.001,0.1,64,4,2,128,none,train_channel_standardization,30,64,0.0001,8,cpu,results\transformer_loso_repeated_seed_runs\loso_seed_1_summary.csv
+2,loso,0.799228,0.799153,0.039413,0.039074,28,512,temporal_patch,32,0.001,0.1,64,4,2,128,none,train_channel_standardization,30,64,0.0001,8,cpu,results\transformer_loso_repeated_seed_runs\loso_seed_2_summary.csv

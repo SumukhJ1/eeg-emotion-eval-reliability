@@ -1,0 +1,2 @@
+model,protocol,n_seeds,seeds,mean_accuracy,std_accuracy,mean_macro_f1,std_macro_f1,window_samples,input_mode,patch_samples,learning_rate,dropout,d_model,n_heads,n_layers,dim_feedforward,class_weight,normalization_strategy,requested_epochs,batch_size,weight_decay,patience
+TemporalPatchTransformer,loso,3,"0,1,2",0.801520,0.003501,0.801141,0.003476,512,temporal_patch,32,0.001,0.1,64,4,2,128,none,train_channel_standardization,30,64,0.0001,8
