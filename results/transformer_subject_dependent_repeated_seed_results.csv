@@ -1,0 +1,4 @@
+seed,protocol,accuracy,macro_f1,accuracy_std,macro_f1_std,n_folds,window_samples,input_mode,patch_samples,learning_rate,dropout,d_model,n_heads,n_layers,dim_feedforward,class_weight,normalization_strategy,requested_epochs,batch_size,weight_decay,patience,device,source_file
+0,subject_dependent,0.766304,0.766356,,,1,512,temporal_patch,32,0.001,0.1,64,4,2,128,none,train_channel_standardization,30,64,0.0001,8,cpu,results\transformer_subject_dependent_repeated_seed_runs\subject_dependent_seed_0.csv
+1,subject_dependent,0.773551,0.773687,,,1,512,temporal_patch,32,0.001,0.1,64,4,2,128,none,train_channel_standardization,30,64,0.0001,8,cpu,results\transformer_subject_dependent_repeated_seed_runs\subject_dependent_seed_1.csv
+2,subject_dependent,0.760870,0.761754,,,1,512,temporal_patch,32,0.001,0.1,64,4,2,128,none,train_channel_standardization,30,64,0.0001,8,cpu,results\transformer_subject_dependent_repeated_seed_runs\subject_dependent_seed_2.csv
