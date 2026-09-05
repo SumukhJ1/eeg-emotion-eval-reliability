@@ -1,0 +1,2 @@
+experiment,model_name,n_folds,mean_accuracy,std_accuracy,mean_macro_f1,std_macro_f1,best_accuracy_subject,best_accuracy,worst_accuracy_subject,worst_accuracy,best_macro_f1_subject,best_macro_f1,worst_macro_f1_subject,worst_macro_f1,requested_epochs,batch_size,learning_rate,weight_decay,dropout,temporal_filters,depth_multiplier,separable_filters,temporal_kernel,separable_kernel,device
+loso_eegnet_raw_windows,EEGNet,3,0.762387,0.041315,0.761061,0.042816,S01,0.804054,S02,0.706081,S01,0.801016,S02,0.701682,30,64,0.001,0.0001,0.25,8,2,16,32,16,cpu
