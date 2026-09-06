@@ -1,0 +1,4 @@
+protocol,train_windows,validation_windows,test_windows,test_design,accuracy,macro_f1,seed_basis,interpretation,source_file
+Original subject-dependent,5305,1327,1656,random windows across all subjects,0.766908,0.767266,"mean across seeds 0, 1, 2",Baseline random-window split with smaller training budget,results/transformer_subject_dependent_repeated_seed_summary.csv
+Matched-budget subject-dependent,6393,1599,296,random windows across all subjects with LOSO-sized train/val/test budget,0.807432,0.807998,seed 0,Controls training-budget/test-size composition while keeping subject-dependent window mixing,results/subject_dependent_transformer_matched_budget.csv
+LOSO,6393,1599,296,held-out subject per fold,0.801520,0.801141,"mean across seeds 0, 1, 2",Subject-independent evaluation with the same mean train/val/test budget as matched SD,results/transformer_loso_repeated_seed_summary.csv
