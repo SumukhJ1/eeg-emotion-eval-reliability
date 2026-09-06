@@ -17,7 +17,7 @@ from src.config import LABEL_MAP, RESULTS_DIR
 from src.eeg_transformer import EEGTransformerConfig, build_eeg_transformer
 from src.gameemo_loader import GAMEEMO_ROOT
 from src.neural_normalization import channel_standardize_splits
-from src.splits import make_subject_dependent_split
+from src.splits import make_loso_splits, make_subject_dependent_matched_budget_split, make_subject_dependent_split
 from src.windowing import DEFAULT_WINDOW_SAMPLES
 
 
@@ -146,6 +146,8 @@ def write_result_csv(
     patch_samples: int,
     class_weight: str,
     class_weights,
+    split_protocol: str,
+    stratified: bool,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
@@ -179,6 +181,8 @@ def write_result_csv(
         "normalization_strategy",
         "class_weight",
         "class_weights",
+        "split_protocol",
+        "stratified",
         "best_val_accuracy",
         "best_val_macro_f1",
         "test_accuracy",
@@ -219,6 +223,8 @@ def write_result_csv(
         "normalization_strategy": normalization_strategy,
         "class_weight": class_weight,
         "class_weights": ";".join(f"{float(weight):.6f}" for weight in class_weights),
+        "split_protocol": split_protocol,
+        "stratified": stratified,
         "best_val_accuracy": f"{val_accuracy:.6f}",
         "best_val_macro_f1": f"{val_macro_f1:.6f}",
         "test_accuracy": f"{accuracy:.6f}",
@@ -252,6 +258,15 @@ def main() -> None:
     parser.add_argument("--input-mode", choices=["channel", "temporal_patch"], default="channel")
     parser.add_argument("--patch-samples", type=int, default=32)
     parser.add_argument("--class-weight", choices=["none", "balanced"], default="none")
+    parser.add_argument(
+        "--split-protocol",
+        choices=["subject_dependent", "subject_dependent_matched_budget"],
+        default="subject_dependent",
+        help="Use the standard split or a subject-dependent split matched to the mean LOSO fit/validation/test budget.",
+    )
+    parser.add_argument("--matched-fit-windows", type=int, default=None)
+    parser.add_argument("--matched-val-windows", type=int, default=None)
+    parser.add_argument("--matched-test-windows", type=int, default=None)
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     parser.add_argument(
         "--window-samples",
@@ -288,30 +303,71 @@ def main() -> None:
         limit_records=args.limit_records,
         window_samples=args.window_samples,
     )
-    split = make_subject_dependent_split(
-        dataset.metadata,
-        test_size=TEST_SIZE,
-        random_state=args.random_seed,
-        stratify=True,
-    )
-    train_indices, val_indices = train_test_split(
-        split.train_indices,
-        test_size=VAL_SIZE,
-        random_state=args.random_seed,
-        stratify=dataset.labels[split.train_indices],
-    )
-    train_indices = sorted(int(idx) for idx in train_indices)
-    val_indices = sorted(int(idx) for idx in val_indices)
+    if args.split_protocol == "subject_dependent_matched_budget":
+        import statistics
+
+        if args.matched_fit_windows is None or args.matched_val_windows is None or args.matched_test_windows is None:
+            loso_fit_sizes: list[int] = []
+            loso_val_sizes: list[int] = []
+            loso_test_sizes: list[int] = []
+            for loso_split in make_loso_splits(dataset.metadata):
+                loso_fit, loso_val = train_test_split(
+                    loso_split.train_indices,
+                    test_size=VAL_SIZE,
+                    random_state=args.random_seed,
+                    stratify=dataset.labels[loso_split.train_indices],
+                )
+                loso_fit_sizes.append(len(loso_fit))
+                loso_val_sizes.append(len(loso_val))
+                loso_test_sizes.append(len(loso_split.test_indices))
+            fit_windows = args.matched_fit_windows or round(statistics.mean(loso_fit_sizes))
+            val_windows = args.matched_val_windows or round(statistics.mean(loso_val_sizes))
+            test_windows = args.matched_test_windows or round(statistics.mean(loso_test_sizes))
+        else:
+            fit_windows = args.matched_fit_windows
+            val_windows = args.matched_val_windows
+            test_windows = args.matched_test_windows
+        matched_split = make_subject_dependent_matched_budget_split(
+            dataset.metadata,
+            fit_windows=fit_windows,
+            val_windows=val_windows,
+            test_windows=test_windows,
+            random_state=args.random_seed,
+            stratify=True,
+        )
+        train_indices = matched_split.fit_indices
+        val_indices = matched_split.val_indices
+        test_indices = matched_split.test_indices
+        split_name = matched_split.split_name
+        stratified = matched_split.stratified
+    else:
+        split = make_subject_dependent_split(
+            dataset.metadata,
+            test_size=TEST_SIZE,
+            random_state=args.random_seed,
+            stratify=True,
+        )
+        train_indices, val_indices = train_test_split(
+            split.train_indices,
+            test_size=VAL_SIZE,
+            random_state=args.random_seed,
+            stratify=dataset.labels[split.train_indices],
+        )
+        train_indices = sorted(int(idx) for idx in train_indices)
+        val_indices = sorted(int(idx) for idx in val_indices)
+        test_indices = split.test_indices
+        split_name = split.split_name
+        stratified = split.stratified
 
     x_train, x_val, x_test, normalization_stats = channel_standardize_splits(
         dataset.windows,
         train_indices,
         val_indices,
-        split.test_indices,
+        test_indices,
     )
     y_train = dataset.labels[train_indices]
     y_val = dataset.labels[val_indices]
-    y_test = dataset.labels[split.test_indices]
+    y_test = dataset.labels[test_indices]
 
     device = TorchDevice(torch, args.device)
     model = build_eeg_transformer(
@@ -395,7 +451,7 @@ def main() -> None:
         n_channels=dataset.windows.shape[1],
         train_windows=len(train_indices),
         val_windows=len(val_indices),
-        test_windows=len(split.test_indices),
+        test_windows=len(test_indices),
         val_accuracy=best_val_accuracy,
         val_macro_f1=best_val_macro_f1,
         accuracy=float(accuracy),
@@ -413,13 +469,17 @@ def main() -> None:
         patch_samples=args.patch_samples,
         class_weight=args.class_weight,
         class_weights=class_weights,
+        split_protocol=split_name,
+        stratified=stratified,
     )
 
     print(f"records: {dataset.n_records}")
     print(f"windows: {dataset.windows.shape}")
     print(f"train_windows: {len(train_indices)}")
     print(f"val_windows: {len(val_indices)}")
-    print(f"test_windows: {len(split.test_indices)}")
+    print(f"test_windows: {len(test_indices)}")
+    print(f"split_protocol: {split_name}")
+    print(f"stratified: {stratified}")
     print(f"best_epoch: {best_epoch}")
     print(f"best_val_accuracy: {best_val_accuracy:.6f}")
     print(f"best_val_macro_f1: {best_val_macro_f1:.6f}")
