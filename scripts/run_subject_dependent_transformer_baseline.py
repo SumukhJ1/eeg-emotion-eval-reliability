@@ -148,6 +148,8 @@ def write_result_csv(
     class_weights,
     split_protocol: str,
     stratified: bool,
+    label_control: str,
+    label_permutation_seed: int,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
@@ -183,6 +185,8 @@ def write_result_csv(
         "class_weights",
         "split_protocol",
         "stratified",
+        "label_control",
+        "label_permutation_seed",
         "best_val_accuracy",
         "best_val_macro_f1",
         "test_accuracy",
@@ -225,6 +229,8 @@ def write_result_csv(
         "class_weights": ";".join(f"{float(weight):.6f}" for weight in class_weights),
         "split_protocol": split_protocol,
         "stratified": stratified,
+        "label_control": label_control,
+        "label_permutation_seed": label_permutation_seed,
         "best_val_accuracy": f"{val_accuracy:.6f}",
         "best_val_macro_f1": f"{val_macro_f1:.6f}",
         "test_accuracy": f"{accuracy:.6f}",
@@ -267,6 +273,13 @@ def main() -> None:
     parser.add_argument("--matched-fit-windows", type=int, default=None)
     parser.add_argument("--matched-val-windows", type=int, default=None)
     parser.add_argument("--matched-test-windows", type=int, default=None)
+    parser.add_argument(
+        "--label-control",
+        choices=["none", "permute_train"],
+        default="none",
+        help="Optional sanity check: permute training labels only while keeping validation/test labels real.",
+    )
+    parser.add_argument("--label-permutation-seed", type=int, default=1729)
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     parser.add_argument(
         "--window-samples",
@@ -368,6 +381,9 @@ def main() -> None:
     y_train = dataset.labels[train_indices]
     y_val = dataset.labels[val_indices]
     y_test = dataset.labels[test_indices]
+    if args.label_control == "permute_train":
+        permutation_rng = np.random.default_rng(args.label_permutation_seed)
+        y_train = permutation_rng.permutation(y_train)
 
     device = TorchDevice(torch, args.device)
     model = build_eeg_transformer(
@@ -471,6 +487,8 @@ def main() -> None:
         class_weights=class_weights,
         split_protocol=split_name,
         stratified=stratified,
+        label_control=args.label_control,
+        label_permutation_seed=args.label_permutation_seed,
     )
 
     print(f"records: {dataset.n_records}")
@@ -490,6 +508,8 @@ def main() -> None:
     print(f"patch_samples: {args.patch_samples}")
     print(f"class_weight: {args.class_weight}")
     print("class_weights: " + ";".join(f"{float(weight):.6f}" for weight in class_weights))
+    print(f"label_control: {args.label_control}")
+    print(f"label_permutation_seed: {args.label_permutation_seed}")
     print("status: first_subject_dependent_checkpoint_not_final")
     print(f"wrote: {args.output}")
 
