@@ -27,6 +27,12 @@ VAL_SIZE = 0.2
 RESULTS_PATH = RESULTS_DIR / "subject_dependent_transformer_baseline.csv"
 
 
+def transformer_model_name(input_mode: str) -> str:
+    if input_mode == "temporal_patch":
+        return "TemporalPatchTransformer"
+    return "ChannelTokenTransformer"
+
+
 class TorchDevice:
     def __init__(self, torch_module, requested: str) -> None:
         if requested == "auto":
@@ -184,7 +190,7 @@ def write_result_csv(
     ]
     row = {
         "experiment": "subject_dependent_transformer_raw_windows",
-        "model_name": "ChannelTokenTransformer",
+        "model_name": transformer_model_name(input_mode),
         "random_seed": random_seed,
         "test_size": TEST_SIZE,
         "val_size": VAL_SIZE,

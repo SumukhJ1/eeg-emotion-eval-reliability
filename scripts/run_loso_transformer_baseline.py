@@ -28,6 +28,12 @@ RESULTS_PATH = RESULTS_DIR / "loso_transformer_baseline.csv"
 SUMMARY_PATH = RESULTS_DIR / "loso_transformer_summary.csv"
 
 
+def transformer_model_name(input_mode: str) -> str:
+    if input_mode == "temporal_patch":
+        return "TemporalPatchTransformer"
+    return "ChannelTokenTransformer"
+
+
 @dataclass(frozen=True)
 class FoldResult:
     subject: str
@@ -357,7 +363,7 @@ def format_result_row(
 ) -> dict[str, object]:
     return {
         "experiment": "loso_transformer_raw_windows",
-        "model_name": "ChannelTokenTransformer",
+        "model_name": transformer_model_name(input_mode),
         "subject": result.subject,
         "random_seed": result.random_seed,
         "val_size": val_size,
