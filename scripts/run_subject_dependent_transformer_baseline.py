@@ -111,6 +111,22 @@ def balanced_class_weights(labels, n_classes: int):
     return weights
 
 
+def permute_labels_within_subject(labels, metadata, indices: list[int], random_seed: int):
+    """Shuffle training labels separately within each subject group."""
+    import numpy as np
+
+    permuted = labels.copy()
+    rng = np.random.default_rng(random_seed)
+    by_subject: dict[str, list[int]] = {}
+    for position, metadata_idx in enumerate(indices):
+        by_subject.setdefault(metadata[metadata_idx].subject, []).append(position)
+
+    for positions in by_subject.values():
+        original = permuted[positions].copy()
+        permuted[positions] = rng.permutation(original)
+    return permuted
+
+
 def write_result_csv(
     output_path: Path,
     *,
@@ -275,9 +291,9 @@ def main() -> None:
     parser.add_argument("--matched-test-windows", type=int, default=None)
     parser.add_argument(
         "--label-control",
-        choices=["none", "permute_train"],
+        choices=["none", "permute_train", "permute_train_within_subject"],
         default="none",
-        help="Optional sanity check: permute training labels only while keeping validation/test labels real.",
+        help="Optional sanity check: permute training labels while keeping validation/test labels real.",
     )
     parser.add_argument("--label-permutation-seed", type=int, default=1729)
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
@@ -384,6 +400,13 @@ def main() -> None:
     if args.label_control == "permute_train":
         permutation_rng = np.random.default_rng(args.label_permutation_seed)
         y_train = permutation_rng.permutation(y_train)
+    elif args.label_control == "permute_train_within_subject":
+        y_train = permute_labels_within_subject(
+            y_train,
+            dataset.metadata,
+            train_indices,
+            args.label_permutation_seed,
+        )
 
     device = TorchDevice(torch, args.device)
     model = build_eeg_transformer(
