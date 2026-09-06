@@ -1,0 +1,3 @@
+protocol,window_samples,random_seed,n_records,n_windows,fit_windows,validation_windows,test_windows,n_folds,stratified
+loso_mean_budget,512,0,112,8288,6393,1599,296,28,
+subject_dependent_matched_budget,512,0,112,8288,6393,1599,296,1,True
