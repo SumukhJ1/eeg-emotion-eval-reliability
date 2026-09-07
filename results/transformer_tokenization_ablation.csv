@@ -1,0 +1,5 @@
+tokenization,protocol,window,accuracy,macro_f1,accuracy_std,macro_f1_std,seed_basis,main_interpretation,source_file
+Channel tokens,subject-dependent,4s,0.650362,0.650782,,,single seed,"Baseline Transformer tokenization: each EEG channel is one token with 512 time samples.",results/transformer_input_mode_comparison.csv
+Channel tokens,LOSO,4s,0.740830,0.739784,0.033418,0.035049,single seed full 28-fold LOSO,"Channel-token LOSO is strong but remains below temporal-patch LOSO.",results/loso_channel_token_transformer_4s_summary.csv
+Temporal patches,subject-dependent,4s,0.766908,0.767266,0.005195,0.004914,"mean across seeds 0,1,2","Temporal patching improves subject-dependent performance over channel tokens.",results/transformer_subject_dependent_repeated_seed_summary.csv
+Temporal patches,LOSO,4s,0.801520,0.801141,0.003501,0.003476,"mean across seeds 0,1,2","Temporal patching is the strongest tested Transformer tokenization and remains stable in LOSO.",results/transformer_loso_repeated_seed_summary.csv
