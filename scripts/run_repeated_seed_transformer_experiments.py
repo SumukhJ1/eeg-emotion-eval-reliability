@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import statistics
 import subprocess
 import sys
 from pathlib import Path
@@ -34,6 +35,7 @@ def write_results(output_path: Path, rows: list[dict[str, str]]) -> None:
     fieldnames = [
         "seed",
         "protocol",
+        "split_protocol",
         "accuracy",
         "macro_f1",
         "accuracy_std",
@@ -107,15 +109,18 @@ def run_subject_dependent(args, seed: int) -> dict[str, str]:
         "--device",
         args.device,
     ]
+    if args.split_protocol != "subject_dependent":
+        command.extend(["--split-protocol", args.split_protocol])
     if args.limit_records is not None:
         command.extend(["--limit-records", str(args.limit_records)])
 
-    print(f"running protocol=subject_dependent seed={seed}")
+    print(f"running protocol=subject_dependent split_protocol={args.split_protocol} seed={seed}")
     subprocess.run(command, cwd=PROJECT_ROOT, check=True)
     result = read_single_row(output_path)
     return {
         "seed": str(seed),
         "protocol": "subject_dependent",
+        "split_protocol": result["split_protocol"],
         "accuracy": result["test_accuracy"],
         "macro_f1": result["test_macro_f1"],
         "accuracy_std": "",
@@ -200,6 +205,7 @@ def run_loso(args, seed: int) -> dict[str, str]:
     return {
         "seed": str(seed),
         "protocol": "loso",
+        "split_protocol": "loso",
         "accuracy": result["mean_accuracy"],
         "macro_f1": result["mean_macro_f1"],
         "accuracy_std": result["std_accuracy"],
@@ -232,10 +238,83 @@ def parse_seeds(raw: str) -> list[int]:
     return seeds
 
 
+def write_summary(output_path: Path, rows: list[dict[str, str]]) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fieldnames = [
+        "model",
+        "protocol",
+        "split_protocol",
+        "n_seeds",
+        "seeds",
+        "mean_accuracy",
+        "std_accuracy",
+        "mean_macro_f1",
+        "std_macro_f1",
+        "window_samples",
+        "input_mode",
+        "patch_samples",
+        "learning_rate",
+        "dropout",
+        "d_model",
+        "n_heads",
+        "n_layers",
+        "dim_feedforward",
+        "class_weight",
+        "normalization_strategy",
+        "requested_epochs",
+        "batch_size",
+        "weight_decay",
+        "patience",
+    ]
+    groups: dict[tuple[str, str], list[dict[str, str]]] = {}
+    for row in rows:
+        groups.setdefault((row["protocol"], row["split_protocol"]), []).append(row)
+
+    summary_rows = []
+    for (protocol, split_protocol), group_rows in sorted(groups.items()):
+        accuracies = [float(row["accuracy"]) for row in group_rows]
+        macro_f1s = [float(row["macro_f1"]) for row in group_rows]
+        first = group_rows[0]
+        summary_rows.append(
+            {
+                "model": "TemporalPatchTransformer" if first["input_mode"] == "temporal_patch" else "ChannelTokenTransformer",
+                "protocol": protocol,
+                "split_protocol": split_protocol,
+                "n_seeds": len(group_rows),
+                "seeds": ",".join(row["seed"] for row in group_rows),
+                "mean_accuracy": f"{statistics.mean(accuracies):.6f}",
+                "std_accuracy": f"{statistics.stdev(accuracies):.6f}" if len(accuracies) > 1 else "0.000000",
+                "mean_macro_f1": f"{statistics.mean(macro_f1s):.6f}",
+                "std_macro_f1": f"{statistics.stdev(macro_f1s):.6f}" if len(macro_f1s) > 1 else "0.000000",
+                "window_samples": first["window_samples"],
+                "input_mode": first["input_mode"],
+                "patch_samples": first["patch_samples"],
+                "learning_rate": first["learning_rate"],
+                "dropout": first["dropout"],
+                "d_model": first["d_model"],
+                "n_heads": first["n_heads"],
+                "n_layers": first["n_layers"],
+                "dim_feedforward": first["dim_feedforward"],
+                "class_weight": first["class_weight"],
+                "normalization_strategy": first["normalization_strategy"],
+                "requested_epochs": first["requested_epochs"],
+                "batch_size": first["batch_size"],
+                "weight_decay": first["weight_decay"],
+                "patience": first["patience"],
+            }
+        )
+
+    with output_path.open("w", newline="") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(summary_rows)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run repeated-seed GAMEEMO Transformer experiments.")
     parser.add_argument("--root", type=Path, default=GAMEEMO_ROOT, help="Path to the GAMEEMO dataset root.")
     parser.add_argument("--output", type=Path, default=OUTPUT_PATH)
+    parser.add_argument("--summary-output", type=Path, default=None)
     parser.add_argument("--run-dir", type=Path, default=RUN_DIR)
     parser.add_argument(
         "--python-executable",
@@ -244,6 +323,12 @@ def main() -> None:
     )
     parser.add_argument("--seeds", type=parse_seeds, default=DEFAULT_SEEDS)
     parser.add_argument("--protocol", choices=["subject_dependent", "loso", "both"], default="both")
+    parser.add_argument(
+        "--split-protocol",
+        choices=["subject_dependent", "subject_dependent_matched_budget"],
+        default="subject_dependent",
+        help="Subject-dependent split protocol to use when protocol includes subject_dependent.",
+    )
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--learning-rate", type=float, default=0.001)
@@ -288,6 +373,9 @@ def main() -> None:
 
     write_results(args.output, rows)
     print(f"wrote: {args.output}")
+    if args.summary_output is not None:
+        write_summary(args.summary_output, rows)
+        print(f"wrote_summary: {args.summary_output}")
 
 
 if __name__ == "__main__":
