@@ -3,5 +3,7 @@ EEGNet,2s,subject_dependent,0.658873,0.651943,full,results/eegnet_kernel_filter_
 EEGNet,2s,loso,0.522771,0.500855,full,results/loso_eegnet_tuned_summary.csv
 EEGNet,4s,subject_dependent,0.652174,0.648623,full,results/subject_dependent_eegnet_4s_baseline.csv
 EEGNet,4s,loso,0.564310,0.543326,full,results/loso_eegnet_4s_summary.csv
+ChannelTokenTransformer,4s,subject_dependent,0.650362,0.650782,single_seed,results/transformer_input_mode_comparison.csv
+ChannelTokenTransformer,4s,loso,0.740830,0.739784,single_seed,results/loso_channel_token_transformer_4s_summary.csv
 TemporalPatchTransformer,4s,subject_dependent,0.766908,0.767266,repeated_seed_mean,results/transformer_subject_dependent_repeated_seed_summary.csv
 TemporalPatchTransformer,4s,loso,0.801520,0.801141,repeated_seed_mean,results/transformer_loso_repeated_seed_summary.csv

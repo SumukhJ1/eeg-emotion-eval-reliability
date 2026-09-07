@@ -11,6 +11,8 @@ Tuned EEGNet,2s,subject-dependent,0.658873,0.651943,0.250000,"LR 0.001, dropout 
 Tuned EEGNet,2s,LOSO,0.522771,0.500855,0.250000,Full 28-fold LOSO; clear protocol drop remains,results/loso_eegnet_tuned_summary.csv
 Tuned EEGNet,4s,subject-dependent,0.652174,0.648623,0.250000,"LR 0.001, dropout 0.25, temporal kernel 32, 8 filters",results/subject_dependent_eegnet_4s_baseline.csv
 Tuned EEGNet,4s,LOSO,0.564310,0.543326,0.250000,Full 28-fold LOSO; fairer 4s neural comparison,results/loso_eegnet_4s_summary.csv
+Channel-token Transformer,4s,subject-dependent,0.650362,0.650782,0.250000,"Single seed; 14 channel tokens, each with 512 samples",results/transformer_input_mode_comparison.csv
+Channel-token Transformer,4s,LOSO,0.740830,0.739784,0.250000,Single seed full 28-fold LOSO,results/loso_channel_token_transformer_4s_summary.csv
 Temporal-patch Transformer,4s,subject-dependent,0.766908,0.767266,0.250000,"Mean across seeds 0, 1, 2; train-only channel standardization",results/transformer_subject_dependent_repeated_seed_summary.csv
 Temporal-patch Transformer,4s,LOSO,0.801520,0.801141,0.250000,"Mean across seeds 0, 1, 2; leakage audits completed",results/transformer_loso_repeated_seed_summary.csv
 CNN-Transformer,4s,subject-dependent,0.764493,0.764492,0.250000,"Secondary first checkpoint; LOSO not run yet",results/cnn_transformer_subject_dependent.csv

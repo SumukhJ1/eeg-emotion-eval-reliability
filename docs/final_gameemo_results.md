@@ -16,6 +16,8 @@ This table is the current paper-ready summary for the GAMEEMO experiments. All r
 | Tuned EEGNet | 2s | LOSO | 0.522771 | 0.500855 | 0.250000 | Full 28-fold LOSO; clear protocol drop remains. |
 | Tuned EEGNet | 4s | Subject-dependent | 0.652174 | 0.648623 | 0.250000 | LR 0.001, dropout 0.25, temporal kernel 32, 8 filters. |
 | Tuned EEGNet | 4s | LOSO | 0.564310 | 0.543326 | 0.250000 | Full 28-fold LOSO; fairer 4s neural comparison. |
+| Channel-token Transformer | 4s | Subject-dependent | 0.650362 | 0.650782 | 0.250000 | Single seed; 14 channel tokens, each with 512 samples. |
+| Channel-token Transformer | 4s | LOSO | 0.740830 | 0.739784 | 0.250000 | Single seed full 28-fold LOSO. |
 | Temporal-patch Transformer | 4s | Subject-dependent | 0.766908 | 0.767266 | 0.250000 | Mean across seeds 0, 1, 2; train-only channel standardization. |
 | Temporal-patch Transformer | 4s | LOSO | 0.801520 | 0.801141 | 0.250000 | Mean across seeds 0, 1, 2; leakage audits completed. |
 | CNN-Transformer | 4s | Subject-dependent | 0.764493 | 0.764492 | 0.250000 | Secondary first checkpoint; LOSO not run yet. |
@@ -34,6 +36,8 @@ This table is the current paper-ready summary for the GAMEEMO experiments. All r
 | Tuned EEGNet LOSO | `results/loso_eegnet_tuned_summary.csv` |
 | Tuned EEGNet 4s subject-dependent | `results/subject_dependent_eegnet_4s_baseline.csv` |
 | Tuned EEGNet 4s LOSO | `results/loso_eegnet_4s_summary.csv` |
+| Channel-token Transformer subject-dependent | `results/transformer_input_mode_comparison.csv` |
+| Channel-token Transformer LOSO | `results/loso_channel_token_transformer_4s_summary.csv` |
 | Temporal-patch Transformer subject-dependent | `results/transformer_subject_dependent_repeated_seed_summary.csv` |
 | Temporal-patch Transformer LOSO | `results/transformer_loso_repeated_seed_summary.csv` |
 | CNN-Transformer subject-dependent | `results/cnn_transformer_subject_dependent.csv` |
