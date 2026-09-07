@@ -9,6 +9,7 @@ This report summarizes the current verification evidence for the GAMEEMO tempora
 | Original Transformer LOSO run | Accuracy `0.798866`, macro-F1 `0.798241` across 28 held-out subjects | `results/loso_transformer_summary.csv` |
 | Repeated-seed Transformer LOSO | Accuracy `0.801520 +/- 0.003501`, macro-F1 `0.801141 +/- 0.003476` across seeds `0, 1, 2` | `results/transformer_loso_repeated_seed_summary.csv` |
 | Repeated-seed Transformer subject-dependent | Accuracy `0.766908 +/- 0.005195`, macro-F1 `0.767266 +/- 0.004914` across seeds `0, 1, 2` | `results/transformer_subject_dependent_repeated_seed_summary.csv` |
+| Full 4-second EEGNet LOSO comparison | Accuracy `0.564310`, macro-F1 `0.543326` across 28 held-out subjects | `results/loso_eegnet_4s_summary.csv` |
 | LOSO split leakage audit | 28 folds checked; held-out subject in train = `False`, held-out subject in validation = `False`, held-out subject in test only = `True` for all folds | `results/loso_leakage_audit.csv` |
 | Normalization leakage audit | 87 rows checked; leakage failures = `0`; normalization statistics fit on train windows only | `results/normalization_leakage_audit.csv` |
 | Per-subject analysis | Best held-out subject: `S03` macro-F1 `0.884837`; worst held-out subject: `S26` macro-F1 `0.725831` | `results/transformer_loso_subject_analysis.csv` |
@@ -40,13 +41,13 @@ The leakage checks are also strong enough for a lab update. The explicit LOSO au
 
 ## 2s vs 4s Caveat
 
-The Transformer result uses 4-second windows, while earlier statistical, bandpower, and tuned EEGNet full LOSO runs mainly used 2-second windows. This is a real protocol caveat. A 4-second window gives the model more temporal context and fewer total windows, so Transformer gains should not be framed as architecture-only gains yet.
+The Transformer result uses 4-second windows, while the statistical and bandpower baselines use 2-second windows. A 4-second window gives the model more temporal context and fewer total windows, so window length remains part of the experimental protocol and should be reported clearly.
 
-The current EEGNet 4-second comparison is only a 3-fold LOSO smoke test, not a full 28-fold result. Until a full 4-second EEGNet LOSO run is completed, the strongest defensible statement is:
+The full 4-second EEGNet LOSO comparison is now complete across all 28 held-out subjects. Its mean accuracy is `0.564310` and mean macro-F1 is `0.543326`, below the temporal-patch Transformer repeated-seed LOSO mean of `0.801520` accuracy and `0.801141` macro-F1. The strongest defensible statement is:
 
 > The temporal-patch Transformer is currently the strongest verified GAMEEMO model under the tested 4-second setup, and its LOSO result is stable across seeds with no detected split or normalization leakage.
 
-It is not yet safe to claim that the Transformer universally beats EEGNet independent of window length.
+It is still not safe to claim broad superiority beyond GAMEEMO until the same pattern is checked on a second benchmark such as DREAMER.
 
 ## AAAI Readiness Judgment
 
@@ -58,4 +59,4 @@ This result is strong enough for an AAAI student abstract progress story if it i
 4. A temporal-patch Transformer gives the strongest current GAMEEMO result.
 5. The surprising LOSO strength was checked with repeated seeds, split leakage audit, normalization leakage audit, confusion matrix, per-subject analysis, and class-level F1.
 
-For the final paper direction, the remaining risk is external validity. The next most important step is not more random Transformer tuning; it is checking whether the same reliability story transfers to a second benchmark such as DREAMER, and completing fairer 4-second EEGNet comparison if time allows.
+For the final paper direction, the remaining risk is external validity. The next most important step is not more random Transformer tuning; it is checking whether the same reliability story transfers to a second benchmark such as DREAMER.

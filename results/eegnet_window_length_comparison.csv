@@ -2,6 +2,6 @@ model,window,protocol,accuracy,macro_f1,status,source_file
 EEGNet,2s,subject_dependent,0.658873,0.651943,full,results/eegnet_kernel_filter_grid.csv
 EEGNet,2s,loso,0.522771,0.500855,full,results/loso_eegnet_tuned_summary.csv
 EEGNet,4s,subject_dependent,0.652174,0.648623,full,results/subject_dependent_eegnet_4s_baseline.csv
-EEGNet,4s,loso,0.762387,0.761061,smoke_3_folds_only,results/loso_eegnet_4s_smoke_summary.csv
+EEGNet,4s,loso,0.564310,0.543326,full,results/loso_eegnet_4s_summary.csv
 TemporalPatchTransformer,4s,subject_dependent,0.766908,0.767266,repeated_seed_mean,results/transformer_subject_dependent_repeated_seed_summary.csv
 TemporalPatchTransformer,4s,loso,0.801520,0.801141,repeated_seed_mean,results/transformer_loso_repeated_seed_summary.csv
