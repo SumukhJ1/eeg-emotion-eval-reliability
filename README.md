@@ -1,140 +1,78 @@
 # Do Modern EEG Emotion Models Generalize?
 
-A protocol-sensitivity audit for EEG emotion recognition on GAMEEMO, with DREAMER as a follow-up benchmark if access is approved.
+A protocol-sensitivity and representation-sensitivity audit for EEG emotion recognition on GAMEEMO.
 
 ## Project Question
 
-Do EEG emotion-recognition model conclusions change when evaluation moves from subject-dependent splits to subject-independent / leave-one-subject-out (LOSO) splits?
+Do EEG emotion-recognition conclusions change when the same dataset, labels, and evaluation code are tested across subject-dependent splits, leave-one-subject-out (LOSO) splits, and different EEG input representations?
 
-## Current Dataset Plan
+## Frozen GAMEEMO Setup
 
-### GAMEEMO: first experiment dataset
+GAMEEMO is the main dataset for the current evidence package.
 
 - 28 subjects
 - 14-channel Emotiv EPOC+ EEG
 - 128 Hz sampling rate
-- Four game-condition emotion labels: boring, calm, horror, funny
-- Local dataset downloaded
-- Used first because it is accessible now and subject-organized
+- Four game-condition labels: boring, calm, horror, funny
+- Uniform random chance baseline: 25%
+- Primary input: preprocessed GAMEEMO CSV files
+- Main window settings: 2-second windows for classical/EEGNet baselines; 4-second windows for the strongest Transformer and matched 4-second EEGNet checks
+
+DREAMER is treated as a future/secondary benchmark, not as current main evidence.
 
 ## Current Dataset Inspection
 
-The local GAMEEMO inspection script confirms 28 subject folders, 112 raw EEG CSV files, 112 raw EEG MAT files, 112 preprocessed EEG CSV files, and 112 preprocessed EEG MAT files. A sample preprocessed CSV has 38,252 samples x 14 channels at 128 Hz, or about 298.84 seconds; planned 2-second windows will have shape 256 samples x 14 channels.
+The local GAMEEMO inspection script confirms 28 subject folders, 112 raw EEG CSV files, 112 raw EEG MAT files, 112 preprocessed EEG CSV files, and 112 preprocessed EEG MAT files. A sample preprocessed CSV has 38,252 samples x 14 channels at 128 Hz, or about 298.84 seconds.
 
-See `docs/gameemo_metadata.md` for the concise file structure and metadata summary.
+See `docs/gameemo_metadata.md` for the file structure and metadata summary.
 
-See `docs/gameemo_prior_methods.md` for a conservative GAMEEMO prior-method comparison table. Published accuracies are treated as literature context, not direct comparisons, unless split, labels, preprocessing, and feature extraction match this repo's protocol.
+## Frozen Result Summary
 
-See `docs/final_gameemo_results.md` for the consolidated GAMEEMO result table across statistical, bandpower, EEGNet, Transformer, and CNN-Transformer baselines.
+All results are for four-class GAMEEMO game-condition classification. Published GAMEEMO numbers should be treated as literature context, not direct comparisons, unless preprocessing, labels, split protocol, and evaluation unit match.
 
-See `docs/gameemo_filtering_rules.md` for the pre-registered conservative filtering policy. The first filtered rerun should remove only missing, nonfinite, flat-channel, or near-zero-variance windows; extreme amplitude and variance windows are flagged but not automatically removed.
+| Input / representation | Model | Window | Subject-dependent acc | LOSO acc | Macro-F1 | Notes |
+| --- | --- | --- | ---: | ---: | --- | --- |
+| Time-statistical features | Logistic regression | 2s | 0.376199 | 0.321309 | 0.374935 / 0.299302 | Weak but above chance. |
+| Log-relative bandpower | Linear SVM | 2s | 0.469724 | 0.388063 | 0.466975 / 0.367017 | EEG-specific features improve classical baselines. |
+| Raw EEG | EEGNet | 2s | 0.658873 | 0.522771 | 0.651943 / 0.500855 | Compact EEG neural baseline. |
+| Raw EEG | EEGNet | 4s | 0.652174 | 0.564310 | 0.648623 / 0.543326 | Fairer 4-second neural comparison. |
+| Raw EEG channel tokens | Transformer | 4s | 0.650362 | 0.740830 | 0.650782 / 0.739784 | LOSO is one seed. |
+| Raw EEG temporal patches | Transformer | 4s | 0.766908 | 0.801520 | 0.767266 / 0.801141 | Strongest current result; repeated seeds where available. |
 
-See `results/preprocessing_audit_results.md` for the before/after quality-filtered bandpower comparison. The conservative hard filter removed 0 windows, so the bandpower LR/SVM results did not materially change.
+See:
 
-## Current Baseline Status
+- `docs/final_gameemo_results.md`
+- `docs/final_model_ablation_table.md`
+- `docs/transformer_tokenization_ablation.md`
+- `docs/transformer_protocol_composition_effects.md`
+- `docs/transformer_verification_report.md`
 
-The first working pipeline is complete for GAMEEMO preprocessed CSV files:
+## Current Pipeline
 
-- Dataset inspected and preprocessed CSV selected for the first pass.
-- GAMEEMO loader parses subject IDs, game IDs, and labels.
-- Recordings are converted into 2-second non-overlapping windows at 128 Hz.
-- Each window is represented with simple statistical features: mean, standard deviation, min, max, and mean squared value per channel.
-- Subject-dependent logistic regression baseline is saved in `results/subject_dependent_baseline.csv`.
-- Subject-dependent linear SVM baseline is saved in `results/subject_dependent_svm_baseline.csv`.
-- LOSO logistic regression baseline is saved in `results/loso_baseline.csv` and summarized in `results/loso_summary.csv`.
-- LOSO linear SVM baseline is saved in `results/loso_svm_baseline.csv` and summarized in `results/loso_svm_summary.csv`.
+- GAMEEMO loader discovers preprocessed CSV files and parses subject/game metadata.
+- Recordings are converted into fixed-length EEG windows.
+- Classical baselines use statistical and log-relative bandpower features.
+- Neural baselines use raw-window EEGNet and Transformer models.
+- Subject-dependent and LOSO split helpers include leakage checks.
+- Neural normalization uses train-only channel statistics.
+- Transformer verification includes repeated seeds, split leakage audit, normalization leakage audit, matched-budget control, permutation-label sanity check, subject-permutation check, confusion matrix, and per-subject analysis.
 
-Current first-pass results with simple statistical window features:
+## Claim Boundaries
 
-| Protocol | Model | Windows | Accuracy | Macro-F1 |
-| --- | --- | ---: | ---: | ---: |
-| Random chance baseline | Uniform 4-class guess | 16,688 | 0.250000 | 0.250000 |
-| Subject-dependent random split | Logistic regression | 16,688 | 0.376199 | 0.374935 |
-| Subject-dependent random split | Linear SVM | 16,688 | 0.374700 | 0.372721 |
-| LOSO mean across 28 folds | Logistic regression | 16,688 | 0.321309 | 0.299302 |
-| LOSO mean across 28 folds | Linear SVM | 16,688 | 0.320709 | 0.298395 |
+This repo does not currently claim state of the art and does not claim broad EEG generalization. The defensible current claim is narrower:
 
-GAMEEMO is a 4-class task, so a uniform random baseline is 25%. Current results should be interpreted relative to this chance level and against internal protocol-controlled comparisons, not directly against published GAMEEMO numbers until preprocessing and split details are verified.
-
-Both baseline model families are using the same rough feature representation. Stronger EEG-specific features, especially bandpower-style features, are the next step before drawing conclusions about model quality.
-
-### EEGNet protocol gap
-
-| Model | Input | Protocol | Accuracy | Macro-F1 | Chance | Accuracy drop vs subject-dependent | Macro-F1 drop vs subject-dependent |
-| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| EEGNet | Raw EEG windows | Subject-dependent | 0.552458 | 0.543291 | 0.250000 | 0.234625 | 0.278458 |
-| EEGNet | Raw EEG windows | LOSO | 0.317833 | 0.264833 | 0.250000 | N/A | N/A |
-| Tuned EEGNet | Raw EEG windows | Subject-dependent | 0.658873 | 0.651943 | 0.250000 | 0.136102 | 0.151088 |
-| Tuned EEGNet | Raw EEG windows | LOSO | 0.522771 | 0.500855 | 0.250000 | N/A | N/A |
-
-EEGNet improves subject-dependent performance over the current classical baselines. Tuning also improves LOSO over the short 3-epoch EEGNet LOSO baseline, but the tuned subject-dependent score remains higher than tuned LOSO, so cross-subject generalization is still the main reliability bottleneck.
-
-### Controlled EEGNet Tuning
-
-All rows use raw 2-second GAMEEMO windows and chance baseline of 0.250000. Subject-dependent rows use the same random train/validation/test split. LOSO columns are only filled where that configuration has been run under leave-one-subject-out.
-
-| **Run** | **LR** | **Dropout** | **Kernel** | **Filters** | **SD acc** | **SD F1** | **LOSO acc** | **LOSO F1** |
-| ------- | ------ | ----------- | ---------- | ----------- | ---------- | --------- | ------------ | ----------- |
-| Initial EEGNet baseline | 0.001 | 0.50 | 64 | 8 | 0.552458 | 0.543291 | 0.317833 | 0.264833 |
-| LR/dropout grid | 0.001 | 0.25 | 64 | 8 | 0.596523 | 0.594435 | not rerun | not rerun |
-| LR/dropout grid | 0.001 | 0.50 | 64 | 8 | 0.552458 | 0.543291 | 0.317833 | 0.264833 |
-| LR/dropout grid | 0.0005 | 0.25 | 64 | 8 | 0.594724 | 0.587984 | not rerun | not rerun |
-| LR/dropout grid | 0.0005 | 0.50 | 64 | 8 | 0.527878 | 0.514261 | not rerun | not rerun |
-| Kernel/filter grid | 0.001 | 0.25 | 32 | 4 | 0.574640 | 0.572062 | not rerun | not rerun |
-| Kernel/filter grid | 0.001 | 0.25 | 32 | 8 | 0.658873 | 0.651943 | 0.522771 | 0.500855 |
-| Kernel/filter grid | 0.001 | 0.25 | 64 | 4 | 0.541667 | 0.534981 | not rerun | not rerun |
-| Kernel/filter grid | 0.001 | 0.25 | 64 | 8 | 0.596523 | 0.594435 | not rerun | not rerun |
-
-The best subject-dependent setting so far is LR 0.001, dropout 0.25, temporal kernel 32, and 8 temporal filters. Running that same tuned configuration under LOSO improved mean LOSO accuracy from 0.317833 to 0.522771 and mean LOSO macro-F1 from 0.264833 to 0.500855. The tuned protocol gap is still visible: 0.136102 accuracy and 0.151088 macro-F1.
-
-### DREAMER: follow-up benchmark
-
-- 23 subjects
-- EEG plus peripheral signals
-- Valence, arousal, dominance labels
-- Access request pending
-- More recognized benchmark for follow-up reliability checks
-
-## Planned Evaluation
-
-| Protocol | Description | Purpose |
-| --- | --- | --- |
-| Subject-dependent | Windows from the same subjects can appear in train and test | Easier within-subject setting |
-| LOSO | One entire subject is held out for test | Unseen-subject generalization |
-
-Main quantity:
-
-```text
-protocol drop = subject-dependent score - LOSO score
-```
-
-## Planned Models
-
-1. Classical baseline: logistic regression or SVM using window-level EEG features
-2. EEG neural baseline: EEGNet or lightweight CNN
-3. Modern model candidate: Transformer / Vision Transformer-style EEG model if feasible
-
-## Planned Metrics
-
-- Accuracy
-- Macro-F1
-- Per-subject LOSO performance
-- Per-subject variance / standard deviation
-- Protocol drop
+> GAMEEMO results are highly sensitive to evaluation protocol and EEG representation. Under the tested setup, temporal-patch Transformer tokenization outperforms channel-token Transformer input, EEGNet, and classical bandpower/statistical baselines, while matched-budget and permutation controls help explain and validate the result.
 
 ## Known Limitations
 
-- These are first-pass baseline results, not final model conclusions.
-- Statistical features are a simple baseline and are not final EEG bandpower features.
-- GAMEEMO preprocessing details still need verification against the dataset documentation.
-- EEGNet and Transformer / ViT-style models are next model tiers after the baseline pipeline is stable.
+- GAMEEMO is the only completed dataset so far.
+- DREAMER remains a future/secondary benchmark for external validation.
+- Published GAMEEMO comparisons may use different labels, preprocessing, splits, or evaluation units.
+- Channel-token Transformer LOSO has one full seed; temporal-patch Transformer LOSO has repeated seeds.
+- Statistical and bandpower features are first-pass baselines, not a final EEG feature study.
 
 ## Next Steps
 
-1. Stabilize the baseline pipeline and result reporting.
-2. Add an EEGNet or lightweight CNN baseline.
-3. Evaluate whether a Transformer / ViT-style EEG model is feasible for this dataset size and protocol.
-
-## Notes
-
-This project is evaluation-focused, not primarily a new architecture paper. The central audit asks whether model gains remain stable under stricter unseen-subject evaluation.
+1. Freeze the GAMEEMO tables and use them in the AAAI draft as preliminary evidence.
+2. Add DREAMER only as a secondary benchmark if time allows.
+3. Keep the main paper story focused on protocol sensitivity, representation sensitivity, and leakage-controlled evaluation.
