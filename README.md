@@ -76,3 +76,12 @@ This repo does not currently claim state of the art and does not claim broad EEG
 1. Freeze the GAMEEMO tables and use them in the AAAI draft as preliminary evidence.
 2. Add DREAMER only as a secondary benchmark if time allows.
 3. Keep the main paper story focused on protocol sensitivity, representation sensitivity, and leakage-controlled evaluation.
+
+## Paper Audit Artifacts
+
+The current AAAI student-abstract draft is backed by explicit provenance notes:
+
+- `docs/paper_claim_provenance.md` maps each major paper claim to the exact repository result files.
+- `docs/citation_verification.md` records which local PDFs were checked for the GAMEEMO dataset, prior GAMEEMO results, chance-level interpretation, and evaluation-reliability citations.
+
+These files are intended to make the draft easier to review and to prevent unsupported claims from entering the final submission.
