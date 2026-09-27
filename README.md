@@ -1,87 +1,51 @@
-# Do Modern EEG Emotion Models Generalize?
+# Does Cross-Subject EEG Evaluation Measure Generalization or Data Budget? A Controlled Study on GAMEEMO
 
-A protocol-sensitivity and representation-sensitivity audit for EEG emotion recognition on GAMEEMO.
+This repository contains a controlled GAMEEMO EEG emotion-recognition study for a 2-page AAAI-style paper. It includes dataset inspection scripts, windowing code, classical feature baselines, EEGNet baselines, Transformer baselines, leakage audits, permutation checks, and paper-facing result summaries. The main task is four-class game-condition classification on GAMEEMO: boring, calm, horror, and funny. The main finding is that the apparent LOSO advantage over subject-dependent evaluation collapses to about 0.25 percentage points after matching the train/validation/test window budget. This means the cross-subject result should be interpreted as protocol-sensitive evidence, not as a broad state-of-the-art claim. All paper-facing numbers are traceable to files under `results/`, with the main claim map in [`docs/paper_claim_provenance.md`](docs/paper_claim_provenance.md).
 
-## Project Question
+## Quick Start
 
-Do EEG emotion-recognition conclusions change when the same dataset, labels, and evaluation code are tested across subject-dependent splits, leave-one-subject-out (LOSO) splits, and different EEG input representations?
+Create an environment and install the dependencies:
 
-## Frozen GAMEEMO Setup
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+pip install -r requirements-eegnet.txt
+```
 
-GAMEEMO is the main dataset for the current evidence package.
+Run the key repeated-seed Transformer checks:
 
-- 28 subjects
-- 14-channel Emotiv EPOC+ EEG
-- 128 Hz sampling rate
-- Four game-condition labels: boring, calm, horror, funny
-- Uniform random chance baseline: 25%
-- Primary input: preprocessed GAMEEMO CSV files
-- Main window settings: 2-second windows for classical/EEGNet baselines; 4-second windows for the strongest Transformer and matched 4-second EEGNet checks
+```bash
+python scripts/run_repeated_seed_transformer_experiments.py --root "<path-to-GAMEEMO-root>" --protocol subject_dependent --seeds 0,1,2 --output results/transformer_subject_dependent_repeated_seed_results.csv --summary-output results/transformer_subject_dependent_repeated_seed_summary.csv --run-dir results/transformer_subject_dependent_repeated_seed_runs
 
-DREAMER is treated as a future/secondary benchmark, not as current main evidence.
+python scripts/run_repeated_seed_transformer_experiments.py --root "<path-to-GAMEEMO-root>" --protocol subject_dependent --split-protocol subject_dependent_matched_budget --seeds 0,1,2 --output results/transformer_matched_budget_repeated_seed_results.csv --summary-output results/transformer_matched_budget_repeated_seed_summary.csv --run-dir results/transformer_matched_budget_repeated_seed_runs
 
-## Current Dataset Inspection
+python scripts/run_repeated_seed_transformer_experiments.py --root "<path-to-GAMEEMO-root>" --protocol loso --seeds 0,1,2 --output results/transformer_loso_repeated_seed_results.csv --summary-output results/transformer_loso_repeated_seed_summary.csv --run-dir results/transformer_loso_repeated_seed_runs
+```
 
-The local GAMEEMO inspection script confirms 28 subject folders, 112 raw EEG CSV files, 112 raw EEG MAT files, 112 preprocessed EEG CSV files, and 112 preprocessed EEG MAT files. A sample preprocessed CSV has 38,252 samples x 14 channels at 128 Hz, or about 298.84 seconds.
+These commands write per-seed outputs and summary CSVs under `results/`. Existing paper-facing CSVs in this repository are treated as frozen result artifacts.
 
-See `docs/gameemo_metadata.md` for the file structure and metadata summary.
+## Main Results
 
-## Frozen Result Summary
+All rows use the 4-second temporal-patch Transformer on GAMEEMO with train-only channel standardization and seeds `0,1,2`.
 
-All results are for four-class GAMEEMO game-condition classification. Published GAMEEMO numbers should be treated as literature context, not direct comparisons, unless preprocessing, labels, split protocol, and evaluation unit match.
+| Protocol | Train windows | Validation windows | Test design | Accuracy | Macro-F1 | Notes |
+| --- | ---: | ---: | --- | ---: | ---: | --- |
+| Original subject-dependent | 5,305 | 1,327 | Random mixed-subject test windows | 76.7 +/- 0.5 | 76.7 +/- 0.5 | From `results/transformer_subject_dependent_repeated_seed_summary.csv`. |
+| Matched-budget subject-dependent | 6,393 | 1,599 | Random mixed-subject test windows, LOSO-sized test set | 80.4 +/- 0.9 | 80.5 +/- 1.0 | From `results/transformer_matched_budget_repeated_seed_summary.csv`. |
+| LOSO | 6,393 | 1,599 | One held-out subject per fold | 80.2 | 80.1 | Seed s.d. 0.4; fold s.d. 4.3; fold range 70.3-88.5. |
 
-| Input / representation | Model | Window | Subject-dependent acc | LOSO acc | Macro-F1 | Notes |
-| --- | --- | --- | ---: | ---: | --- | --- |
-| Time-statistical features | Logistic regression | 2s | 0.376199 | 0.321309 | 0.374935 / 0.299302 | Weak but above chance. |
-| Log-relative bandpower | Linear SVM | 2s | 0.469724 | 0.388063 | 0.466975 / 0.367017 | EEG-specific features improve classical baselines. |
-| Raw EEG | EEGNet | 2s | 0.658873 | 0.522771 | 0.651943 / 0.500855 | Compact EEG neural baseline. |
-| Raw EEG | EEGNet | 4s | 0.652174 | 0.564310 | 0.648623 / 0.543326 | Fairer 4-second neural comparison. |
-| Raw EEG channel tokens | Transformer | 4s | 0.650362 | 0.740830 | 0.650782 / 0.739784 | LOSO is one seed. |
-| Raw EEG temporal patches | Transformer | 4s | 0.766908 | 0.801520 | 0.767266 / 0.801141 | Strongest current result; repeated seeds where available. |
+The matched-budget subject-dependent accuracy is 80.4054%, and the LOSO accuracy is 80.1520%. Their difference is 0.2534 percentage points.
 
-See:
+## Directory Map
 
-- `docs/final_gameemo_results.md`
-- `docs/final_model_ablation_table.md`
-- `docs/transformer_tokenization_ablation.md`
-- `docs/transformer_protocol_composition_effects.md`
-- `docs/transformer_verification_report.md`
-
-## Current Pipeline
-
-- GAMEEMO loader discovers preprocessed CSV files and parses subject/game metadata.
-- Recordings are converted into fixed-length EEG windows.
-- Classical baselines use statistical and log-relative bandpower features.
-- Neural baselines use raw-window EEGNet and Transformer models.
-- Subject-dependent and LOSO split helpers include leakage checks.
-- Neural normalization uses train-only channel statistics.
-- Transformer verification includes repeated seeds, split leakage audit, normalization leakage audit, matched-budget control, permutation-label sanity check, subject-permutation check, confusion matrix, and per-subject analysis.
+- `src/`: Dataset loading, windowing, split logic, features, EEGNet, Transformer, normalization, and quality-filter helpers.
+- `scripts/`: Dataset inspection, training runners, audits, summaries, and analysis scripts.
+- `results/`: Frozen CSV outputs, verification notes, and result README files.
+- `docs/`: Dataset notes, claim provenance, protocol notes, prior-method caveats, and paper-facing summaries.
+- `notebooks/`: Working notebooks, if used for local exploration.
+- `data/`: Placeholder location only; GAMEEMO files are not copied into this repository.
 
 ## Claim Boundaries
 
-This repo does not currently claim state of the art and does not claim broad EEG generalization. The defensible current claim is narrower:
-
-> GAMEEMO results are highly sensitive to evaluation protocol and EEG representation. Under the tested setup, temporal-patch Transformer tokenization outperforms channel-token Transformer input, EEGNet, and classical bandpower/statistical baselines, while matched-budget and permutation controls help explain and validate the result.
-
-## Known Limitations
-
-- GAMEEMO is the only completed dataset so far.
-- DREAMER remains a future/secondary benchmark for external validation.
-- Published GAMEEMO comparisons may use different labels, preprocessing, splits, or evaluation units.
-- Channel-token Transformer LOSO has one full seed; temporal-patch Transformer LOSO has repeated seeds.
-- Statistical and bandpower features are first-pass baselines, not a final EEG feature study.
-
-## Next Steps
-
-1. Freeze the GAMEEMO tables and use them in the AAAI draft as preliminary evidence.
-2. Add DREAMER only as a secondary benchmark if time allows.
-3. Keep the main paper story focused on protocol sensitivity, representation sensitivity, and leakage-controlled evaluation.
-
-## Paper Audit Artifacts
-
-The current AAAI student-abstract draft is backed by explicit provenance notes:
-
-- `docs/paper_claim_provenance.md` maps each major paper claim to the exact repository result files.
-- `docs/citation_verification.md` records which local PDFs were checked for the GAMEEMO dataset, prior GAMEEMO results, chance-level interpretation, and evaluation-reliability citations.
-
-These files are intended to make the draft easier to review and to prevent unsupported claims from entering the final submission.
+This repository does not claim state of the art. It does not claim broad EEG emotion-recognition generalization across datasets. The current claim is narrower: on GAMEEMO, reported model conclusions change when evaluation budget, split protocol, and EEG representation are controlled carefully.

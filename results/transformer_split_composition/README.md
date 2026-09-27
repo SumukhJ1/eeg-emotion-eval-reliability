@@ -50,8 +50,8 @@ Current Transformer outputs save aggregate test accuracy/F1 only. They do not sa
 
 ## Files
 
-- `C:\Users\Sumukh\eeg-emotion-eval-reliability\results\transformer_subject_dependent_repeated_seed_results.csv`
-- `C:\Users\Sumukh\eeg-emotion-eval-reliability\results\transformer_loso_repeated_seed_results.csv`
+- `results/transformer_subject_dependent_repeated_seed_results.csv`
+- `results/transformer_loso_repeated_seed_results.csv`
 - `results/transformer_split_composition/split_counts.csv`
 - `results/transformer_split_composition/train_size_comparison.csv`
 - `results/transformer_split_composition/loso_subject_distribution.csv`
