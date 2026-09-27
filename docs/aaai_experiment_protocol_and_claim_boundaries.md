@@ -1,6 +1,6 @@
-# AAAI experiment protocol and claim boundaries
+# Experiment protocol and scope
 
-Current evidence boundary for the AAAI draft and lab discussion.
+Current evidence boundary for the draft and lab discussion.
 
 ## Dataset scope
 
@@ -27,7 +27,7 @@ Current evidence boundary for the AAAI draft and lab discussion.
 - Channel-token Transformer on raw EEG windows
 - Temporal-patch Transformer on raw EEG windows
 
-## Claim boundaries
+## Scope
 
 No SOTA claim is made.
 

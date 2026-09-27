@@ -15,7 +15,7 @@ Configuration held fixed: 4-second windows, temporal-patch input mode, 32-sample
 | TemporalPatchTransformer | Subject-dependent | 0.766908 | 0.005195 | 0.767266 | 0.004914 |
 | TemporalPatchTransformer | LOSO | 0.801520 | 0.003501 | 0.801141 | 0.003476 |
 
-Interpretation: the subject-dependent Transformer score is stable across seeds, and the LOSO advantage also remains stable across the same seed set. The LOSO > subject-dependent result is not just a one-run random initialization artifact. The likely explanation should still be investigated rather than overclaimed, because subject-dependent and LOSO use different train/test compositions.
+Interpretation: the subject-dependent Transformer score is stable across seeds, and the LOSO advantage also remains stable across the same seed set. A one-run random initialization artifact does not explain the LOSO > subject-dependent result. The likely explanation should still be investigated rather than overclaimed, because subject-dependent and LOSO use different train/test compositions.
 
 Files:
 

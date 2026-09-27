@@ -1,12 +1,12 @@
 # GAMEEMO dataset metadata
 
-Based on `python scripts/inspect_gameemo.py` run against the local GAMEEMO dataset root. The dataset root is outside this repository and is not committed.
+Based on `python scripts/inspect_gameemo.py` run against the local GAMEEMO dataset root. The dataset root is outside the repo and is not committed.
 
 ```text
 <path-to-GAMEEMO-root>
 ```
 
-No dataset files are copied into this repository.
+No dataset files are copied into the repo.
 
 ## Dataset layout
 

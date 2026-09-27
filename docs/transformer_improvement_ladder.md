@@ -22,4 +22,4 @@ The highest-impact changes were not generic Transformer tuning. The meaningful g
 2. Replacing channel tokens with temporal patches improved subject-dependent macro-F1 to `0.766356`.
 3. The best temporal-patch configuration reached LOSO mean macro-F1 `0.798241` across 28 held-out subjects, with worst held-out subject S26 at `0.725831` macro-F1 and best held-out subject S03 at `0.884837`.
 
-The next checks should focus on whether this strong LOSO result is robust to repeated seeds and whether the same temporal-patch design transfers to a second dataset such as DREAMER.
+The next checks should focus on repeated seeds for this strong LOSO result and on whether the same temporal-patch design transfers to a second dataset such as DREAMER.

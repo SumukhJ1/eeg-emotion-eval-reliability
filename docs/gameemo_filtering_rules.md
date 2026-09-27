@@ -46,7 +46,7 @@ The following windows should be flagged for analysis but not automatically remov
 | Extreme amplitude | max absolute amplitude `> 370.145550` | 17 | Flag only |
 | Extreme variance | whole-window variance `> 1255.610078` | 879 | Flag only |
 
-The thresholds above were computed by the audit script using robust upper thresholds over window-level values. These are potential artifact indicators, but they are not automatically removed yet because high amplitude or high variance can also reflect valid subject/game differences. Removing them requires a separately documented rule before running filtered results.
+The thresholds above were computed by the audit script using upper thresholds over window-level values. These are potential artifact indicators, but they are not automatically removed yet because high amplitude or high variance can also reflect valid subject/game differences. Removing them requires a separately documented rule before running filtered results.
 
 ## Reporting policy
 

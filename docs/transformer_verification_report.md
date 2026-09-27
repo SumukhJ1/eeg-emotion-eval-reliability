@@ -1,6 +1,6 @@
 # Transformer verification report
 
-Current verification evidence for the GAMEEMO temporal-patch Transformer result. This is lab-meeting and draft material, not a final publication claim.
+Current verification evidence for the GAMEEMO temporal-patch Transformer result. This is lab-meeting and draft material, with more checks still needed before final publication claims.
 
 ## Result summary
 
@@ -47,11 +47,11 @@ The full 4-second EEGNet LOSO comparison is now complete across all 28 held-out 
 
 > The temporal-patch Transformer is currently the strongest verified GAMEEMO model under the tested 4-second setup, and its LOSO result is stable across seeds with no detected split or normalization leakage.
 
-It is still not safe to claim broad superiority beyond GAMEEMO until the same pattern is checked on a second benchmark such as DREAMER.
+Broad superiority beyond GAMEEMO would require the same pattern on a second benchmark such as DREAMER.
 
-## AAAI readiness judgment
+## Readiness judgment
 
-This result is strong enough for an AAAI student abstract progress story if it is framed as a controlled evaluation finding rather than as a final model claim. The credible argument is:
+This result is strong enough for a student-abstract progress story if it is framed as a controlled evaluation finding rather than as a final model claim. The credible argument is:
 
 1. The project built a reproducible GAMEEMO pipeline with subject-dependent and LOSO protocols.
 2. Classical statistical and bandpower baselines are above chance but limited.

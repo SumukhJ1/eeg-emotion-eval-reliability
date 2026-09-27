@@ -2,7 +2,7 @@
 
 This folder contains frozen result artifacts for the GAMEEMO experiments. Result CSV files are not edited during documentation cleanup; README files only describe what is already present.
 
-## Paper-facing files
+## Files reported in the paper
 
 | File | Description |
 | --- | --- |

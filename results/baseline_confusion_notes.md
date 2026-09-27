@@ -1,6 +1,6 @@
 # Baseline Confusion Matrix Notes
 
-This file summarizes aggregate confusion matrices for the current GAMEEMO baseline settings.
+Aggregate confusion matrices for the current GAMEEMO baseline settings.
 
 Rows are saved in `results/baseline_confusion_matrices.csv`; each block is normalized by true label.
 
@@ -17,5 +17,5 @@ Rows are saved in `results/baseline_confusion_matrices.csv`; each block is norma
 
 ## Use In Meeting
 
-- Use this to show which emotion conditions are most often confused, not just the headline accuracy.
+- Use this to show which emotion conditions are most often confused. Headline accuracy alone does not show that.
 - The LOSO blocks are especially useful because they aggregate predictions from subject-held-out folds.

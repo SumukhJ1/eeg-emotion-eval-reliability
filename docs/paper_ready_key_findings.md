@@ -10,4 +10,4 @@
 
 5. Matched-budget control explains the earlier suspicious LOSO > SD pattern.
 
-6. Permutation checks collapse to chance, supporting that the Transformer is not just exploiting label-independent artifacts.
+6. Permutation checks collapse to chance, which argues against label-independent artifacts explaining the Transformer result.

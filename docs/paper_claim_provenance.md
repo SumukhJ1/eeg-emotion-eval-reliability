@@ -1,6 +1,6 @@
 # Paper claim provenance
 
-Paper-facing claims mapped to the repository files that contain the supporting values. Verification date: 2026-09-27.
+Paper claims mapped to the repository files that contain the supporting values. Verification date: 2026-09-27.
 
 | Claim | Value | File | Verified |
 | --- | --- | --- | --- |
@@ -18,4 +18,4 @@ Paper-facing claims mapped to the repository files that contain the supporting v
 
 ## Boundary
 
-These files support a GAMEEMO protocol-sensitivity and representation-sensitivity claim. They do not support a state-of-the-art claim or a broad EEG emotion-recognition generalization claim across datasets.
+These files support a GAMEEMO protocol-sensitivity and representation-sensitivity claim. They do not support a claim that the model beats published GAMEEMO methods or generalizes across EEG emotion-recognition datasets.

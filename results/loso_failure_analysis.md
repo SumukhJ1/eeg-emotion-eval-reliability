@@ -34,5 +34,5 @@ Using bandpower + logistic regression, the highest macro-F1 subjects are:
 ## Takeaways
 
 - LOSO performance varies substantially by held-out subject, so aggregate scores hide subject-level failure modes.
-- Bandpower improves the overall baseline, but several held-out subjects remain difficult.
+- Bandpower improves the baseline, but several held-out subjects remain difficult.
 - The next analysis target is to inspect whether difficult subjects share label confusions, signal-quality issues, or preprocessing differences.
