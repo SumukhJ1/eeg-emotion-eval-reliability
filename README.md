@@ -48,4 +48,4 @@ The matched-budget subject-dependent accuracy is 80.4054%, and the LOSO accuracy
 
 ## Scope
 
-I'm not claiming this beats published GAMEEMO methods. I'm not claiming broad EEG emotion-recognition generalization across datasets. My current claim is narrower: on GAMEEMO, reported model conclusions change when evaluation budget, split protocol, and EEG representation are controlled carefully.
+I'm not claiming this beats published GAMEEMO methods nor broad EEG emotion-recognition generalization across datasets either. My current claim is that on GAMEEMO, reported model conclusions change when evaluation budget, split protocol, and EEG representation are controlled carefully.
