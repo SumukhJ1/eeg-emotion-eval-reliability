@@ -1,6 +1,6 @@
-# Paper Claim Provenance
+# Paper claim provenance
 
-This table maps paper-facing claims to the repository files that contain the supporting values. Verification date: 2026-09-27.
+Paper-facing claims mapped to the repository files that contain the supporting values. Verification date: 2026-09-27.
 
 | Claim | Value | File | Verified |
 | --- | --- | --- | --- |

@@ -1,8 +1,8 @@
-# Citation Verification Notes
+# Citation verification notes
 
-This file records which local source files were used to verify the paper's cited dataset and literature facts. It is not a substitute for the final `.bib` file; it is a provenance note for the current draft.
+Local source files used to verify the paper's cited dataset and literature facts. This is a provenance note for the current draft, not a substitute for the final `.bib` file.
 
-## Verified From Local PDFs
+## Verified from local PDFs
 
 | Citation used in paper | Local file checked | Verified facts relevant to the paper |
 | --- | --- | --- |
@@ -13,13 +13,13 @@ This file records which local source files were used to verify the paper's cited
 | Musgrave, Belongie, and Lim, 2020 | `2003.08505v3.pdf` | Title is `A Metric Learning Reality Check`; supports the broader evaluation-reliability framing that methodology choices can change apparent model conclusions. |
 | Lotte, Congedo, Lecuyer, Lamarche, and Arnaldi, 2007 | `article2007idk.pdf` | Title is `A review of classification algorithms for EEG-based brain-computer interfaces`; venue text shows `Journal of Neural Engineering, 2007, 4`; supports EEG classifier/evaluation context. |
 
-## EEGNet Citation
+## EEGNet citation
 
 The EEGNet author list and title were verified from `1611.08024v1.pdf`, the arXiv version of the paper. The final bibliography should use the canonical journal citation:
 
 Lawhern, V. J.; Solon, A. J.; Waytowich, N. R.; Gordon, S. M.; Hung, C. P.; and Lance, B. J. 2018. EEGNet: A compact convolutional network for EEG-based brain-computer interfaces. `Journal of Neural Engineering` 15(5):056013. DOI: `10.1088/1741-2552/aace8c`.
 
-## Dataset Provenance Decision
+## Dataset provenance decision
 
 The local dataset folder name matches `Database for Emotion Recognition System Based on EEG Signals and Various Computer Games - GAMEEMO`.
 
@@ -27,7 +27,7 @@ The folder title matches the original Alakus, Gonen, and Turkoglu GAMEEMO datase
 
 The Nasereddin et al. 2024 IEEE Access paper should not be used as the primary dataset citation unless the current analysis specifically uses that paper's release, preprocessing, or method. Current repo evidence supports Alakus et al. 2020 as the dataset provenance.
 
-## Remaining Manual Checks Before Submission
+## Remaining manual checks before submission
 
 1. Confirm the exact formatting of each BibTeX entry in the AAAI bibliography.
 2. Confirm whether the final submission should include the GitHub URL in the main paper, supplemental material, or both.

@@ -1,4 +1,4 @@
-# GAMEEMO Transformer Improvement Ladder
+# GAMEEMO Transformer improvement ladder
 
 These results use GAMEEMO preprocessed EEG CSV files, 4-class game-condition labels, train-only channel standardization for neural models, and fixed random seed `0` unless noted. Chance is `25%` for the 4-class task.
 

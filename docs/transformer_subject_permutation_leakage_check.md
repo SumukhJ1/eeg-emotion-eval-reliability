@@ -1,6 +1,6 @@
-# Transformer Subject-Permutation Leakage Check
+# Transformer subject-permutation leakage check
 
-This check tests whether the temporal-patch Transformer can still perform well when label structure is disrupted while preserving subject/file organization. The model uses the same 4-second matched-budget subject-dependent setup as the main Transformer control, but training labels are shuffled within each subject. Validation and test labels remain real.
+Checks whether the temporal-patch Transformer can still perform well when label structure is disrupted while preserving subject/file organization. The model uses the same 4-second matched-budget subject-dependent setup as the main Transformer control, but training labels are shuffled within each subject. Validation and test labels remain real.
 
 | **Setup** | **Training labels** | **Accuracy** | **Macro-F1** | **Chance** |
 | --------- | ------------------- | -----------: | -----------: | ---------: |
@@ -22,7 +22,7 @@ The within-subject permutation keeps subject membership, file/session organizati
 - Epochs: 30
 - Best validation epoch: 26
 
-## Source Files
+## Source files
 
 - `results/subject_dependent_transformer_matched_budget.csv`
 - `results/transformer_permutation_label_sanity_check.csv`

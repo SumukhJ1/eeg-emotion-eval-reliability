@@ -1,6 +1,6 @@
-# Transformer Protocol-Composition Effects
+# Transformer protocol-composition effects
 
-This table isolates the main composition issue behind the earlier surprising result where LOSO appeared stronger than subject-dependent evaluation. All rows are repeated-seed summaries over seeds `0`, `1`, and `2`, using the same temporal-patch Transformer configuration on 4-second GAMEEMO windows with train-only channel standardization.
+Main composition issue behind the earlier surprising result where LOSO appeared stronger than subject-dependent evaluation. All rows are repeated-seed summaries over seeds `0`, `1`, and `2`, using the same temporal-patch Transformer configuration on 4-second GAMEEMO windows with train-only channel standardization.
 
 | **Protocol** | **Train windows** | **Validation windows** | **Test design** | **Accuracy** | **Macro-F1** | **Seed std acc / F1** |
 | ------------ | ----------------: | ---------------------: | --------------- | -----------: | -----------: | --------------------: |
@@ -12,17 +12,17 @@ This table isolates the main composition issue behind the earlier surprising res
 
 The original subject-dependent repeated-seed run used fewer training windows and a larger mixed-subject test set than the LOSO folds. After matching the subject-dependent train/validation/test budget to the mean LOSO budget, subject-dependent performance rose from `0.766908 +/- 0.005195` accuracy / `0.767266 +/- 0.004914` macro-F1 to `0.804054 +/- 0.008938` accuracy / `0.804870 +/- 0.009685` macro-F1.
 
-This means the apparent LOSO advantage should not be interpreted as stronger unseen-subject generalization by itself. A more careful interpretation is:
+The apparent LOSO advantage should not be interpreted as stronger unseen-subject generalization by itself. A more careful interpretation is:
 
 > The apparent LOSO advantage is not interpreted as stronger generalization until training-budget and split-composition effects are controlled.
 
-With the matched-budget control, subject-dependent and LOSO repeated-seed performance are very close: matched-budget SD is `0.804054` accuracy / `0.804870` macro-F1, while LOSO is `0.801520` accuracy / `0.801141` macro-F1. This suggests that the earlier LOSO > subject-dependent pattern was likely driven largely by train/test budget and split-composition differences, not by the model being inherently better on unseen subjects.
+With the matched-budget control, subject-dependent and LOSO repeated-seed performance are very close: matched-budget SD is `0.804054` accuracy / `0.804870` macro-F1, while LOSO is `0.801520` accuracy / `0.801141` macro-F1. The earlier LOSO > subject-dependent pattern was likely driven largely by train/test budget and split-composition differences.
 
-## Paper-Relevant Takeaway
+## Paper-relevant takeaway
 
-This is a useful reliability finding: protocol comparisons can change conclusions even when the model, dataset, labels, window length, and preprocessing are held fixed. Reporting only the original subject-dependent and LOSO scores would have made the Transformer result look suspicious. Adding the matched-budget control turns that anomaly into evidence that the evaluation protocol itself must be audited.
+Protocol comparisons can change conclusions even when the model, dataset, labels, window length, and preprocessing are held fixed. Reporting only the original subject-dependent and LOSO scores would have made the Transformer result look suspicious. The matched-budget control turns that anomaly into evidence that the evaluation protocol itself must be audited.
 
-## Source Files
+## Source files
 
 - `results/transformer_subject_dependent_repeated_seed_summary.csv`
 - `results/subject_dependent_transformer_matched_budget.csv`

@@ -1,6 +1,6 @@
-# Final GAMEEMO Model Ablation Table
+# Final GAMEEMO model ablation table
 
-This table summarizes the current controlled GAMEEMO model ladder. All rows use the same four GAMEEMO game-condition labels, so random chance is `0.250000`. The `Macro-F1` column reports `subject-dependent / LOSO` when both protocols are available.
+Current controlled GAMEEMO model ladder. All rows use the same four GAMEEMO game-condition labels, so random chance is `0.250000`. The `Macro-F1` column reports `subject-dependent / LOSO` when both protocols are available.
 
 | Input / representation | Model | Window length | Subject-dependent accuracy | LOSO accuracy | Macro-F1 | Main interpretation |
 | --- | --- | --- | ---: | ---: | --- | --- |
@@ -11,11 +11,11 @@ This table summarizes the current controlled GAMEEMO model ladder. All rows use 
 | Raw EEG channel tokens | Transformer | 4s | 0.650362 | 0.740830 | 0.650782 / 0.739784 | Channel-token Transformer improves in LOSO but remains below temporal patches; result is one seed rather than repeated-seed. |
 | Raw EEG temporal patches | Transformer | 4s | 0.766908 | 0.801520 | 0.767266 / 0.801141 | Temporal patching gives the strongest current GAMEEMO result and remains stable under repeated-seed LOSO with leakage checks. |
 
-## Paper Story
+## Paper story
 
 The ablation supports a clean progression: simple time-domain features are only a sanity-check baseline, EEG-specific bandpower features help classical models, EEGNet improves raw-window learning, and the largest gain comes from changing the Transformer input representation from channel tokens to temporal patches. The current strongest result is the 4-second temporal-patch Transformer, but it should still be framed as a GAMEEMO finding until the same pattern is tested on a second dataset.
 
-## Source Files
+## Source files
 
 | Result | Source files |
 | --- | --- |

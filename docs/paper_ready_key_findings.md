@@ -1,4 +1,4 @@
-# Paper-Ready Key Findings
+# Paper-ready key findings
 
 1. Time-stat features are weak but above chance.
 

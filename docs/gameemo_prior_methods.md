@@ -1,6 +1,6 @@
-# GAMEEMO Prior-Method Comparison
+# GAMEEMO prior-method comparison
 
-This table is for literature context and reviewer-defense, not for an unsupported SOTA claim. A reported GAMEEMO accuracy is only directly comparable to this repo if the label task, preprocessing, windowing, and split protocol match. In particular, binary positive/negative studies are not directly comparable to the current four-class boring/calm/horror/funny setup.
+Literature context for the GAMEEMO results. A reported GAMEEMO accuracy is only directly comparable to this repo if the label task, preprocessing, windowing, and split protocol match. Binary positive/negative studies are not directly comparable to the current four-class boring/calm/horror/funny setup.
 
 | **Paper** | **Year** | **Task** | **Split** | **Reported result** | **Directly comparable?** |
 | --------- | -------- | -------- | --------- | ------------------- | ------------------------ |
@@ -12,7 +12,7 @@ This table is for literature context and reviewer-defense, not for an unsupporte
 | [LEDPatNet19: Automated Emotion Recognition Model based on Nonlinear LED Pattern Feature Extraction Function using EEG Signals](https://pmc.ncbi.nlm.nih.gov/articles/PMC9279545/) | 2022 | Four-class GAMEEMO classification using TQWT, LED-pattern/statistical handcrafted features, RFIChi2 feature selection, and cubic SVM | 10-fold cross-validation | Best GAMEEMO channel accuracy `99.29%` | **No.** Four-class GAMEEMO, but 10-fold/channel-wise handcrafted-feature setup is not matched to LOSO raw-window evaluation. |
 | [*Subject-independent multi-channel voting for EEG-based emotion recognition using wavelet scattering deep network and advanced signal metrics*](https://doi.org/10.1007/s10044-025-01501-1) | 2025 | GAMEEMO four-class subject-independent recognition with wavelet scattering / signal metrics and multi-channel voting | LOSO cross-validation, according to the public Springer abstract/snippet | GAMEEMO four-class accuracy `79.0179%` without multi-channel majority vote; `100%` with majority voting | **Closest but cautious.** The non-voting four-class LOSO result is protocol-relevant; the voting result needs careful scrutiny before comparison because channel-voting/aggregation can change the evaluation unit. |
 
-## Interpretation For Current Results
+## Interpretation for current results
 
 - The safest first reference point for this repo is still the `25%` random baseline for four-class GAMEEMO.
 - Binary positive/negative papers should not be compared directly against the current four-class task.
@@ -20,7 +20,7 @@ This table is for literature context and reviewer-defense, not for an unsupporte
 - The closest comparison category is subject-independent four-class GAMEEMO work, especially Kiruthiga et al. and the 2025 multi-channel voting paper, but even these are not exact matches because their feature pipelines and aggregation units differ.
 - Do not claim SOTA unless the comparison protocol is matched: same four labels, same subject-independent split, same evaluation unit, and no test-subject leakage in preprocessing or normalization.
 
-## Sources Checked
+## Sources checked
 
 - GAMEEMO dataset paper: https://doi.org/10.1016/j.bspc.2020.101951
 - GAMEEMO dataset card: https://www.kaggle.com/datasets/sigfest/database-for-emotion-recognition-system-gameemo
@@ -31,6 +31,6 @@ This table is for literature context and reviewer-defense, not for an unsupporte
 - LEDPatNet19 paper: https://pmc.ncbi.nlm.nih.gov/articles/PMC9279545/
 - Subject-independent multi-channel voting paper: https://doi.org/10.1007/s10044-025-01501-1
 
-## Omitted Or Treated Cautiously
+## Omitted or treated cautiously
 
 Some GAMEEMO-related claims found through search snippets or reposted PDFs were not promoted into comparison claims when the public source did not expose enough protocol detail. High accuracies from binary tasks, channel-level 10-fold cross-validation, majority-vote aggregation, or unclear split protocols should be cited only as motivation for why protocol auditing matters.

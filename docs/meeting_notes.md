@@ -1,4 +1,4 @@
-# Lab Meeting Prep Notes
+# Lab meeting prep notes
 
 ## Current Framing
 
@@ -6,7 +6,7 @@ GAMEEMO is the immediate working dataset. DREAMER remains a more recognized foll
 
 The current lab-meeting story is that the full first-pass GAMEEMO baseline pipeline is now running end to end. The central comparison is still subject-dependent performance versus leave-one-subject-out performance.
 
-## Current Baseline Status
+## Current baseline status
 
 - Dataset inspected: 28 subjects, 14 EEG channels, 128 Hz sampling rate.
 - Preprocessed CSV files chosen for the first pass.
@@ -36,7 +36,7 @@ Saved outputs:
 - Check preprocessing choices and possible outlier effects.
 - Treat Transformer / ViT-style models as a modern-model extension after the baseline pipeline is stable.
 
-## Next Meeting Target
+## Next meeting target
 
 Show code-level progress and first-pass baseline evidence:
 

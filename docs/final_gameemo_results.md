@@ -1,6 +1,6 @@
-# Consolidated GAMEEMO Result Table
+# Consolidated GAMEEMO result table
 
-This table is the current paper-ready summary for the GAMEEMO experiments. All results use the four GAMEEMO game-condition labels, so the uniform random chance baseline is `0.250000`. Published GAMEEMO numbers should still be treated as literature context, not direct comparisons, unless preprocessing, labels, and split protocol match.
+Current paper-ready summary for the GAMEEMO experiments. All results use the four GAMEEMO game-condition labels, so the uniform random chance baseline is `0.250000`. Published GAMEEMO numbers should still be treated as literature context, not direct comparisons, unless preprocessing, labels, and split protocol match.
 
 | **Input/model** | **Window** | **Protocol** | **Accuracy** | **Macro-F1** | **Chance** | **Notes** |
 | --------------- | ---------- | ------------ | ------------ | ------------ | ---------- | --------- |
@@ -22,7 +22,7 @@ This table is the current paper-ready summary for the GAMEEMO experiments. All r
 | Temporal-patch Transformer | 4s | LOSO | 0.801520 | 0.801141 | 0.250000 | Mean across seeds 0, 1, 2; leakage audits completed. |
 | CNN-Transformer | 4s | Subject-dependent | 0.764493 | 0.764492 | 0.250000 | Secondary first checkpoint; LOSO not run yet. |
 
-## Source Files
+## Source files
 
 | **Rows** | **Source file** |
 | -------- | --------------- |

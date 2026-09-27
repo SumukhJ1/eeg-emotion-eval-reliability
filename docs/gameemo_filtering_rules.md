@@ -1,8 +1,8 @@
-# GAMEEMO Conservative Filtering Rules
+# GAMEEMO conservative filtering rules
 
 These rules define the first conservative signal-quality filtering policy before any filtered baseline results are reported. The goal is to avoid tuning filtering decisions after seeing model performance.
 
-## Current Audit Inputs
+## Current audit inputs
 
 The signal-quality audit uses preprocessed GAMEEMO CSV files converted into 2-second non-overlapping windows at 128 Hz. The current audit output is saved in:
 
@@ -24,7 +24,7 @@ Current audit summary:
 | Extreme-amplitude windows | 17 |
 | Extreme-variance windows | 879 |
 
-## Removal Rules
+## Removal rules
 
 Only windows that meet one of the following hard quality-failure rules should be removed in the first filtered rerun:
 
@@ -37,7 +37,7 @@ Only windows that meet one of the following hard quality-failure rules should be
 
 These rules remove obvious invalid or degenerate windows only. On the current audit, they would remove 0 of 16,688 windows.
 
-## Flag-Only Rules
+## Flag-only rules
 
 The following windows should be flagged for analysis but not automatically removed in the first filtered rerun:
 
@@ -48,7 +48,7 @@ The following windows should be flagged for analysis but not automatically remov
 
 The thresholds above were computed by the audit script using robust upper thresholds over window-level values. These are potential artifact indicators, but they are not automatically removed yet because high amplitude or high variance can also reflect valid subject/game differences. Removing them requires a separately documented rule before running filtered results.
 
-## Reporting Policy
+## Reporting policy
 
 Filtered results should clearly state:
 

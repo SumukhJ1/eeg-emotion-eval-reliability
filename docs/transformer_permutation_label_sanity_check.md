@@ -1,6 +1,6 @@
-# Transformer Permutation-Label Sanity Check
+# Transformer permutation-label sanity check
 
-This sanity check reruns the temporal-patch Transformer using the matched-budget subject-dependent split, but randomly permutes the training labels before fitting. Validation and test labels remain the real GAMEEMO labels.
+Matched-budget subject-dependent Transformer run with randomly permuted training labels. Validation and test labels remain the real GAMEEMO labels.
 
 | **Setup** | **Window** | **Split** | **Train labels** | **Accuracy** | **Macro-F1** | **Chance** |
 | --------- | ---------- | --------- | ---------------- | -----------: | -----------: | ---------: |
@@ -21,7 +21,7 @@ The permuted-label run falls to chance, which supports the pipeline: the high Tr
 - Epochs: 30 requested, early stopped at epoch 16
 - Best validation epoch: 8
 
-## Source Files
+## Source files
 
 - `results/subject_dependent_transformer_matched_budget.csv`
 - `results/transformer_permutation_label_sanity_check.csv`

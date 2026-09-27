@@ -2,14 +2,14 @@
 
 This folder contains frozen result artifacts for the GAMEEMO experiments. Result CSV files are not edited during documentation cleanup; README files only describe what is already present.
 
-## Paper-Facing Files
+## Paper-facing files
 
 | File | Description |
 | --- | --- |
 | `final_gameemo_result_table.csv` | Compact paper-ready table for the main model ladder. It lists model/input, window length, protocol, accuracy, macro-F1, chance, notes, and source file. |
 | `transformer_subject_dependent_repeated_seed_summary.csv` | Three-seed summary for the original 4-second temporal-patch Transformer subject-dependent split. Main columns are mean accuracy, accuracy standard deviation, mean macro-F1, macro-F1 standard deviation, and fixed model config. |
 | `transformer_subject_dependent_repeated_seed_results.csv` | Per-seed rows behind the original subject-dependent summary. Each row gives seed, protocol, accuracy, macro-F1, and config. |
-| `transformer_matched_budget_repeated_seed_summary.csv` | Three-seed summary for the matched-budget subject-dependent Transformer control. This is the main control for train/validation/test budget effects. |
+| `transformer_matched_budget_repeated_seed_summary.csv` | Three-seed summary for the matched-budget subject-dependent Transformer control. Main control for train/validation/test budget effects. |
 | `transformer_matched_budget_repeated_seed_results.csv` | Per-seed rows behind the matched-budget subject-dependent summary. Each row gives seed, protocol, accuracy, macro-F1, split protocol, and config. |
 | `transformer_loso_repeated_seed_summary.csv` | Three-seed summary for temporal-patch Transformer LOSO. Main columns are mean accuracy, seed standard deviation, mean macro-F1, and fixed model config. |
 | `transformer_loso_repeated_seed_results.csv` | Per-seed LOSO summary rows. Each row gives one seed's mean LOSO accuracy, macro-F1, fold standard deviations, and source summary file. |
@@ -19,7 +19,7 @@ This folder contains frozen result artifacts for the GAMEEMO experiments. Result
 | `loso_leakage_audit.csv` | LOSO split audit. Expected values are `held_out_in_train=False`, `held_out_in_val=False`, and `held_out_in_test_only=True` for each fold. |
 | `normalization_leakage_audit.csv` | Normalization audit. Expected values are `normalization_source=train only` and `test_data_used_in_fit=False`. |
 
-## Transformer Supporting Files
+## Transformer supporting files
 
 | File or folder | Description |
 | --- | --- |
@@ -39,7 +39,7 @@ This folder contains frozen result artifacts for the GAMEEMO experiments. Result
 | `transformer_lr_dropout_grid_runs/`, `transformer_window_length_runs/`, and `transformer_input_mode_runs/` | Per-run files behind earlier Transformer tuning and input-mode comparisons. |
 | `transformer_forward_shape_check.txt` | Shape check output for the Transformer forward pass. |
 
-## Baseline And EEGNet Files
+## Baseline and EEGNet files
 
 | File or group | Description |
 | --- | --- |
@@ -53,7 +53,7 @@ This folder contains frozen result artifacts for the GAMEEMO experiments. Result
 | `eegnet_lr_dropout_grid_runs/` and `eegnet_kernel_filter_grid_runs/` | Per-run files behind EEGNet tuning grids. |
 | `cnn_transformer_subject_dependent.csv` | First CNN-Transformer subject-dependent checkpoint. |
 
-## Audit And Notes Files
+## Audit and notes files
 
 | File or group | Description |
 | --- | --- |
@@ -64,6 +64,6 @@ This folder contains frozen result artifacts for the GAMEEMO experiments. Result
 | `protocol_gap_summary.csv` | Summary of subject-dependent versus LOSO gaps for earlier model stages. |
 | `first_baseline_notes.md`, `preprocessing_audit_results.md`, `loso_eegnet_smoke_notes.md`, `normalization_leakage_audit.md`, and `eegnet_window_length_comparison.md` | Short notes describing selected result groups. |
 
-## Reading The Columns
+## Reading the columns
 
 Accuracy and macro-F1 are the main metrics. Macro-F1 is included because the task has four labels and per-class behavior matters. Chance is `0.25` for uniform random guessing on the four GAMEEMO game-condition labels.

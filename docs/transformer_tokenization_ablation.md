@@ -1,6 +1,6 @@
-# Transformer Tokenization Ablation
+# Transformer tokenization ablation
 
-This is the current novelty table for the GAMEEMO Transformer experiments. All rows use 4-second raw EEG windows, train-only channel standardization, `d_model=64`, `n_heads=4`, `n_layers=2`, learning rate `0.001`, dropout `0.1`, and 30 requested epochs.
+Current tokenization table for the GAMEEMO Transformer experiments. All rows use 4-second raw EEG windows, train-only channel standardization, `d_model=64`, `n_heads=4`, `n_layers=2`, learning rate `0.001`, dropout `0.1`, and 30 requested epochs.
 
 | Tokenization | Protocol | Accuracy | Macro-F1 | Evidence basis | Main interpretation |
 | --- | --- | ---: | ---: | --- | --- |
@@ -11,7 +11,7 @@ This is the current novelty table for the GAMEEMO Transformer experiments. All r
 
 ## Interpretation
 
-The key ablation is representation, not just using a Transformer. Channel-token input treats each EEG channel as a token and asks attention to compare channels directly. Temporal-patch input instead divides the 4-second signal into time patches where each token sees all channels, which appears to better preserve short temporal EEG structure.
+The key ablation is representation. Channel-token input treats each EEG channel as a token and asks attention to compare channels directly. Temporal-patch input instead divides the 4-second signal into time patches where each token sees all channels, which appears to better preserve short temporal EEG structure.
 
 The strongest defensible claim is:
 
@@ -19,7 +19,7 @@ The strongest defensible claim is:
 
 The channel-token LOSO result is currently one seed, while temporal-patch LOSO is repeated across three seeds. That should be stated clearly in slides or draft text.
 
-## Source Files
+## Source files
 
 - `results/transformer_input_mode_comparison.csv`
 - `results/loso_channel_token_transformer_4s_summary.csv`

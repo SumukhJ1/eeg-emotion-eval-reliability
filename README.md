@@ -1,8 +1,8 @@
 # Does Cross-Subject EEG Evaluation Measure Generalization or Data Budget? A Controlled Study on GAMEEMO
 
-This repository contains a controlled GAMEEMO EEG emotion-recognition study for a 2-page AAAI-style paper. It includes dataset inspection scripts, windowing code, classical feature baselines, EEGNet baselines, Transformer baselines, leakage audits, permutation checks, and paper-facing result summaries. The main task is four-class game-condition classification on GAMEEMO: boring, calm, horror, and funny. The main finding is that the apparent LOSO advantage over subject-dependent evaluation collapses to about 0.25 percentage points after matching the train/validation/test window budget. This means the cross-subject result should be interpreted as protocol-sensitive evidence, not as a broad state-of-the-art claim. All paper-facing numbers are traceable to files under `results/`, with the main claim map in [`docs/paper_claim_provenance.md`](docs/paper_claim_provenance.md).
+Controlled GAMEEMO EEG emotion-recognition study for a 2-page AAAI-style paper. The repo has dataset inspection scripts, windowing code, classical feature baselines, EEGNet baselines, Transformer baselines, leakage audits, permutation checks, and paper-facing result summaries. The main task is four-class game-condition classification on GAMEEMO: boring, calm, horror, and funny. The main finding is that the apparent LOSO advantage over subject-dependent evaluation collapses to about 0.25 percentage points after matching the train/validation/test window budget. The cross-subject result is protocol-sensitive evidence, not a broad state-of-the-art claim. All paper-facing numbers trace to files under `results/`, with the main claim map in [`docs/paper_claim_provenance.md`](docs/paper_claim_provenance.md).
 
-## Quick Start
+## Quick start
 
 Create an environment and install the dependencies:
 
@@ -25,7 +25,7 @@ python scripts/run_repeated_seed_transformer_experiments.py --root "<path-to-GAM
 
 These commands write per-seed outputs and summary CSVs under `results/`. Existing paper-facing CSVs in this repository are treated as frozen result artifacts.
 
-## Main Results
+## Main results
 
 All rows use the 4-second temporal-patch Transformer on GAMEEMO with train-only channel standardization and seeds `0,1,2`.
 
@@ -37,7 +37,7 @@ All rows use the 4-second temporal-patch Transformer on GAMEEMO with train-only 
 
 The matched-budget subject-dependent accuracy is 80.4054%, and the LOSO accuracy is 80.1520%. Their difference is 0.2534 percentage points.
 
-## Directory Map
+## Directory map
 
 - `src/`: Dataset loading, windowing, split logic, features, EEGNet, Transformer, normalization, and quality-filter helpers.
 - `scripts/`: Dataset inspection, training runners, audits, summaries, and analysis scripts.
@@ -46,6 +46,6 @@ The matched-budget subject-dependent accuracy is 80.4054%, and the LOSO accuracy
 - `notebooks/`: Working notebooks, if used for local exploration.
 - `data/`: Placeholder location only; GAMEEMO files are not copied into this repository.
 
-## Claim Boundaries
+## Claim boundaries
 
-This repository does not claim state of the art. It does not claim broad EEG emotion-recognition generalization across datasets. The current claim is narrower: on GAMEEMO, reported model conclusions change when evaluation budget, split protocol, and EEG representation are controlled carefully.
+No state-of-the-art claim here. No broad EEG emotion-recognition generalization claim across datasets. The current claim is narrower: on GAMEEMO, reported model conclusions change when evaluation budget, split protocol, and EEG representation are controlled carefully.

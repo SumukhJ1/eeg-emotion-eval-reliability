@@ -1,14 +1,14 @@
-# GAMEEMO Dataset Metadata
+# GAMEEMO dataset metadata
 
-This summary is based on `python scripts/inspect_gameemo.py` run against the local GAMEEMO dataset root:
+Based on `python scripts/inspect_gameemo.py` run against the local GAMEEMO dataset root. The dataset root is outside this repository and is not committed.
 
 ```text
-C:\Users\Sumukh\Downloads\GAMEEMO Dataset\Database for Emotion Recognition System Based on EEG Signals and Various Computer Games - GAMEEMO\GAMEEMO
+<path-to-GAMEEMO-root>
 ```
 
 No dataset files are copied into this repository.
 
-## Dataset Layout
+## Dataset layout
 
 - Subject folders: 28 top-level folders, named `(S01)` through `(S28)`.
 - Each subject folder contains:
@@ -19,7 +19,7 @@ No dataset files are copied into this repository.
   - `SAM Ratings/`
 - The dataset root also contains `Gameplays/` with MP4 gameplay videos.
 
-## File Counts
+## File counts
 
 | Scope | CSV | MAT | PDF | MP4 |
 | --- | ---: | ---: | ---: | ---: |
@@ -27,7 +27,7 @@ No dataset files are copied into this repository.
 | Preprocessed EEG files | 112 | 112 | 0 | 0 |
 | All dataset files | 232 | 232 | 116 | 4 |
 
-## EEG Channels
+## EEG channels
 
 The inspected preprocessed CSV header contains 14 channels:
 
@@ -35,7 +35,7 @@ The inspected preprocessed CSV header contains 14 channels:
 AF3, AF4, F3, F4, F7, F8, FC5, FC6, O1, O2, P7, P8, T7, T8
 ```
 
-## Sampling And Shape
+## Sampling and shape
 
 - Sampling rate: 128 Hz.
 - Sample inspected recording:
@@ -45,6 +45,6 @@ AF3, AF4, F3, F4, F7, F8, FC5, FC6, O1, O2, P7, P8, T7, T8
 - Planned 2-second window shape:
   - 256 samples x 14 channels.
 
-## Raw Vs Preprocessed Organization
+## Raw vs preprocessed organization
 
 For each subject, raw and preprocessed EEG are stored separately. Each representation is available in both CSV and MAT formats, with one file per game condition. The first analysis pass should use the preprocessed CSV files because they can be inspected with the Python standard library and already expose a clean 14-channel EEG matrix.

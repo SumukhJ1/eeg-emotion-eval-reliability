@@ -1,8 +1,8 @@
-# Transformer Split Composition Analysis
+# Transformer split composition analysis
 
-This analysis compares the GAMEEMO 4-second temporal-patch Transformer subject-dependent split against LOSO folds to explain why LOSO is outperforming subject-dependent evaluation.
+Comparison of the GAMEEMO 4-second temporal-patch Transformer subject-dependent split against LOSO folds.
 
-## Train Size
+## Train size
 
 | Protocol | Fit windows | Val windows | Test windows | Note |
 | --- | ---: | ---: | ---: | --- |
@@ -11,15 +11,15 @@ This analysis compares the GAMEEMO 4-second temporal-patch Transformer subject-d
 
 The biggest structural difference is train size: LOSO fits on many more windows per fold because only one subject is held out before the validation split.
 
-## Class And Game Balance
+## Class and game balance
 
-The subject-dependent test split is exactly balanced by label and game: 414 windows per class/game. This means the lower subject-dependent Transformer score is not explained by a harder class-balance distribution.
+The subject-dependent test split is exactly balanced by label and game: 414 windows per class/game. The lower subject-dependent Transformer score is not explained by a harder class-balance distribution.
 
-## Subject Coverage
+## Subject coverage
 
 The subject-dependent test split contains windows from 28 subjects. Each LOSO test fold contains exactly one subject, with all windows from that subject held out.
 
-## LOSO Subject Distribution
+## LOSO subject distribution
 
 | Hardest held-out subjects | Mean acc | Mean F1 |
 | --- | ---: | ---: |
@@ -37,9 +37,9 @@ The subject-dependent test split contains windows from 28 subjects. Each LOSO te
 | S22 | 0.850225 | 0.849662 |
 | S20 | 0.849099 | 0.847878 |
 
-## Class And Game Accuracy Gap
+## Class and game accuracy gap
 
-Current Transformer outputs save aggregate test accuracy/F1 only. They do not save per-window predictions, so true per-game or per-class Transformer accuracy cannot be reconstructed from the existing result files. This analysis therefore saves per-class and per-game split composition, but marks per-class/per-game accuracy as a follow-up requiring prediction logging.
+Current Transformer outputs save aggregate test accuracy/F1 only. They do not save per-window predictions, so true per-game or per-class Transformer accuracy cannot be reconstructed from the existing result files. The saved files cover per-class and per-game split composition; per-class/per-game accuracy requires prediction logging.
 
 ## Interpretation
 

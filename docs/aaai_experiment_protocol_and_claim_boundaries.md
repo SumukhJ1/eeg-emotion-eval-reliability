@@ -1,8 +1,8 @@
-# AAAI Experiment Protocol and Claim Boundaries
+# AAAI experiment protocol and claim boundaries
 
-This document freezes the current evidence boundary for the AAAI draft and lab discussion.
+Current evidence boundary for the AAAI draft and lab discussion.
 
-## Dataset Scope
+## Dataset scope
 
 - Main dataset: GAMEEMO
 - DREAMER status: future/secondary benchmark, not part of the current main evidence
@@ -10,7 +10,7 @@ This document freezes the current evidence boundary for the AAAI draft and lab d
 - Labels: boring, calm, horror, funny
 - Chance baseline: 25% uniform random chance
 
-## Evaluation Protocol
+## Evaluation protocol
 
 - Subject-dependent: random window split where windows from the same subjects may appear in train and test
 - LOSO: leave-one-subject-out evaluation where each fold holds out one full subject for test
@@ -19,7 +19,7 @@ This document freezes the current evidence boundary for the AAAI draft and lab d
 - Stability: repeated seeds are reported where available
 - LOSO reporting: full 28 subject folds are reported for completed LOSO experiments
 
-## Included Final Models
+## Included final models
 
 - Logistic regression on time-statistical features
 - Linear SVM on log-relative bandpower features
@@ -27,7 +27,7 @@ This document freezes the current evidence boundary for the AAAI draft and lab d
 - Channel-token Transformer on raw EEG windows
 - Temporal-patch Transformer on raw EEG windows
 
-## Claim Boundaries
+## Claim boundaries
 
 No SOTA claim is made.
 
@@ -37,13 +37,13 @@ No direct comparison to published GAMEEMO papers is claimed unless the task, pre
 
 DREAMER is not used as main evidence yet.
 
-## Main Claim
+## Main claim
 
 The main claim is protocol and representation sensitivity:
 
 > On GAMEEMO, conclusions depend strongly on evaluation protocol and raw EEG representation. Temporal-patch Transformer tokenization is the strongest tested representation under the current controlled setup, and matched-budget plus permutation checks help defend the result against obvious split-size and label-independent artifact explanations.
 
-## Current Evidence Package
+## Current evidence package
 
 - Final result table: `docs/final_gameemo_results.md`
 - Final model ablation table: `docs/final_model_ablation_table.md`

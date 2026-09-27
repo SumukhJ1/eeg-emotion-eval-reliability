@@ -1,8 +1,8 @@
-# Transformer Verification Report
+# Transformer verification report
 
-This report summarizes the current verification evidence for the GAMEEMO temporal-patch Transformer result. It is intended as lab-meeting and draft material, not as a final publication claim.
+Current verification evidence for the GAMEEMO temporal-patch Transformer result. This is lab-meeting and draft material, not a final publication claim.
 
-## Result Summary
+## Result summary
 
 | **Check** | **Result** | **Source** |
 | --------- | ---------- | ---------- |
@@ -15,7 +15,7 @@ This report summarizes the current verification evidence for the GAMEEMO tempora
 | Per-subject analysis | Best held-out subject: `S03` macro-F1 `0.884837`; worst held-out subject: `S26` macro-F1 `0.725831` | `results/transformer_loso_subject_analysis.csv` |
 | Class-level F1 | boring `0.839435`, calm `0.764677`, horror `0.790225`, funny `0.800000` | `results/transformer_loso_class_f1.csv` |
 
-## Model Configuration
+## Model configuration
 
 The verified Transformer uses raw GAMEEMO EEG windows with train-only channel standardization. The strongest checked setting is:
 
@@ -33,13 +33,13 @@ The verified Transformer uses raw GAMEEMO EEG windows with train-only channel st
 - Batch size: 64
 - Weight decay: 0.0001
 
-## Verification Interpretation
+## Verification interpretation
 
 The repeated-seed result is stable enough to present as a preliminary GAMEEMO finding. The LOSO mean changed only slightly from the original single run (`0.798866` accuracy, `0.798241` macro-F1) to the repeated-seed mean (`0.801520` accuracy, `0.801141` macro-F1), and the standard deviation across seeds is small. That makes the result less likely to be a lucky single initialization.
 
-The leakage checks are also strong enough for a lab update. The explicit LOSO audit confirms that held-out subjects do not appear in training or validation folds. The normalization audit confirms that validation and test windows are transformed using statistics fit only from training windows, with zero reported leakage failures.
+The leakage checks are also strong enough for a lab update. The LOSO audit shows that held-out subjects do not appear in training or validation folds. The normalization audit shows that validation and test windows use statistics fit only from training windows, with zero reported leakage failures.
 
-## 2s vs 4s Caveat
+## 2s vs 4s caveat
 
 The Transformer result uses 4-second windows, while the statistical and bandpower baselines use 2-second windows. A 4-second window gives the model more temporal context and fewer total windows, so window length remains part of the experimental protocol and should be reported clearly.
 
@@ -49,7 +49,7 @@ The full 4-second EEGNet LOSO comparison is now complete across all 28 held-out 
 
 It is still not safe to claim broad superiority beyond GAMEEMO until the same pattern is checked on a second benchmark such as DREAMER.
 
-## AAAI Readiness Judgment
+## AAAI readiness judgment
 
 This result is strong enough for an AAAI student abstract progress story if it is framed as a controlled evaluation finding rather than as a final model claim. The credible argument is:
 
