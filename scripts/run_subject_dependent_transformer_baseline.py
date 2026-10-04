@@ -25,6 +25,7 @@ RANDOM_SEED = 0
 TEST_SIZE = 0.2
 VAL_SIZE = 0.2
 RESULTS_PATH = RESULTS_DIR / "subject_dependent_transformer_baseline.csv"
+PREDICTIONS_DIR = RESULTS_DIR / "predictions"
 
 
 def transformer_model_name(input_mode: str) -> str:
@@ -97,6 +98,18 @@ def evaluate(model, loader, device) -> tuple[float, float]:
     accuracy = accuracy_score(targets, predictions)
     macro_f1 = f1_score(targets, predictions, average="macro")
     return float(accuracy), float(macro_f1)
+
+
+def collect_predictions(model, loader, device) -> tuple[list[int], list[int]]:
+    model.eval()
+    predictions = []
+    targets = []
+    with device.no_grad_context():
+        for inputs, batch_targets in loader:
+            logits = model(inputs.to(device.value))
+            predictions.extend(logits.argmax(dim=1).detach().cpu().tolist())
+            targets.extend(batch_targets.tolist())
+    return targets, predictions
 
 
 def balanced_class_weights(labels, n_classes: int):
@@ -262,10 +275,57 @@ def write_result_csv(
         writer.writerow(row)
 
 
+def default_predictions_path(input_mode: str, split_protocol: str, seed: int) -> Path:
+    model_name = transformer_model_name(input_mode)
+    return PREDICTIONS_DIR / f"{model_name}_{split_protocol}_seed{seed}_predictions.csv"
+
+
+def write_predictions_csv(
+    output_path: Path,
+    *,
+    seed: int,
+    protocol: str,
+    metadata,
+    test_indices: list[int],
+    y_true: list[int],
+    y_pred: list[int],
+) -> None:
+    if not (len(test_indices) == len(y_true) == len(y_pred)):
+        raise ValueError(
+            "Prediction logging length mismatch: "
+            f"indices={len(test_indices)} y_true={len(y_true)} y_pred={len(y_pred)}"
+        )
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fieldnames = ["seed", "protocol", "subject_id", "window_index", "y_true", "y_pred", "correct"]
+    with output_path.open("w", newline="") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for dataset_idx, target, prediction in zip(test_indices, y_true, y_pred):
+            meta = metadata[dataset_idx]
+            writer.writerow(
+                {
+                    "seed": seed,
+                    "protocol": protocol,
+                    "subject_id": meta.subject,
+                    "window_index": dataset_idx,
+                    "y_true": int(target),
+                    "y_pred": int(prediction),
+                    "correct": int(target) == int(prediction),
+                }
+            )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run a subject-dependent GAMEEMO Transformer checkpoint.")
     parser.add_argument("--root", type=Path, default=GAMEEMO_ROOT, help="Path to the GAMEEMO dataset root.")
     parser.add_argument("--output", type=Path, default=RESULTS_PATH, help="Path to write the result CSV.")
+    parser.add_argument(
+        "--predictions-output",
+        type=Path,
+        default=None,
+        help="Path to write per-window test predictions. Defaults to results/predictions/{model}_{protocol}_seed{seed}_predictions.csv.",
+    )
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--random-seed", type=int, default=RANDOM_SEED)
     parser.add_argument("--batch-size", type=int, default=64)
@@ -473,6 +533,7 @@ def main() -> None:
     epochs_ran = epoch
     model.load_state_dict(best_state)
     accuracy, macro_f1 = evaluate(model, test_loader, device)
+    prediction_targets, prediction_values = collect_predictions(model, test_loader, device)
 
     write_result_csv(
         args.output,
@@ -514,6 +575,21 @@ def main() -> None:
         label_permutation_seed=args.label_permutation_seed,
     )
 
+    predictions_output = args.predictions_output or default_predictions_path(
+        args.input_mode,
+        split_name,
+        args.random_seed,
+    )
+    write_predictions_csv(
+        predictions_output,
+        seed=args.random_seed,
+        protocol=split_name,
+        metadata=dataset.metadata,
+        test_indices=test_indices,
+        y_true=prediction_targets,
+        y_pred=prediction_values,
+    )
+
     print(f"records: {dataset.n_records}")
     print(f"windows: {dataset.windows.shape}")
     print(f"train_windows: {len(train_indices)}")
@@ -535,6 +611,7 @@ def main() -> None:
     print(f"label_permutation_seed: {args.label_permutation_seed}")
     print("status: first_subject_dependent_checkpoint_not_final")
     print(f"wrote: {args.output}")
+    print(f"wrote_predictions: {predictions_output}")
 
 
 if __name__ == "__main__":
