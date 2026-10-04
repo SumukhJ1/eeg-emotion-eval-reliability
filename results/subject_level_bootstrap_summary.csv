@@ -1,0 +1,3 @@
+comparison,point_estimate,ci_2_5,ci_97_5,wilcoxon_p_value,n_subjects,n_resamples,rng_seed
+loso_minus_original_sd_accuracy_gap,0.02966306,0.01416636,0.04491830,0.00106452,28,10000,1729
+matched_budget_sd_minus_loso_accuracy_gap,0.00365965,-0.01024302,0.01788312,0.81392329,28,10000,1729
