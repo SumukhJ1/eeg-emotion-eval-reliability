@@ -1,0 +1,2 @@
+model,protocol,split_protocol,n_seeds,seeds,mean_accuracy,std_accuracy,mean_macro_f1,std_macro_f1,window_samples,input_mode,patch_samples,learning_rate,dropout,d_model,n_heads,n_layers,dim_feedforward,class_weight,normalization_strategy,requested_epochs,batch_size,weight_decay,patience
+ChannelTokenTransformer,subject_dependent,subject_dependent_matched_budget,3,"0,1,2",0.715090,0.035486,0.715064,0.035139,512,channel,32,0.001,0.1,64,4,2,128,none,train_channel_standardization,30,64,0.0001,8
