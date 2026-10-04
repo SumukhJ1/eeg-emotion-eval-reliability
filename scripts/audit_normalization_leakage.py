@@ -15,13 +15,13 @@ from src.baseline_data import build_window_dataset
 from src.config import RESULTS_DIR
 from src.gameemo_loader import GAMEEMO_ROOT
 from src.neural_normalization import fit_channel_standardization
-from src.splits import make_loso_splits, make_subject_dependent_split, validate_loso_split
+from src.splits import make_loso_splits, make_subject_dependent_matched_budget_split, make_subject_dependent_split, validate_loso_split
 
 
 TEST_SIZE = 0.2
 VAL_SIZE = 0.2
 WINDOW_SAMPLES = 512
-DEFAULT_SEEDS = [0, 1, 2]
+DEFAULT_SEEDS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 OUTPUT_PATH = RESULTS_DIR / "normalization_leakage_audit.csv"
 
 
@@ -210,6 +210,43 @@ def main() -> None:
                 fit_indices=sd_fit,
                 val_indices=sd_val,
                 test_indices=sd_split.test_indices,
+                held_out_subject=None,
+            )
+        )
+
+        import statistics
+
+        loso_fit_sizes: list[int] = []
+        loso_val_sizes: list[int] = []
+        loso_test_sizes: list[int] = []
+        for loso_split in make_loso_splits(dataset.metadata):
+            fit_indices, val_indices = split_train_validation(
+                loso_split.train_indices,
+                dataset.labels,
+                val_size=args.val_size,
+                random_seed=seed,
+            )
+            loso_fit_sizes.append(len(fit_indices))
+            loso_val_sizes.append(len(val_indices))
+            loso_test_sizes.append(len(loso_split.test_indices))
+
+        matched_split = make_subject_dependent_matched_budget_split(
+            dataset.metadata,
+            fit_windows=round(statistics.mean(loso_fit_sizes)),
+            val_windows=round(statistics.mean(loso_val_sizes)),
+            test_windows=round(statistics.mean(loso_test_sizes)),
+            random_state=seed,
+            stratify=True,
+        )
+        rows.append(
+            audit_normalization_row(
+                protocol="subject_dependent_matched_budget",
+                fold_seed=f"seed_{seed}",
+                windows=dataset.windows,
+                metadata=dataset.metadata,
+                fit_indices=matched_split.fit_indices,
+                val_indices=matched_split.val_indices,
+                test_indices=matched_split.test_indices,
                 held_out_subject=None,
             )
         )
